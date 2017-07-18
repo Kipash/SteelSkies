@@ -119,7 +119,8 @@ public class LineGenerator : MonoBehaviour
      * Draws texture with a size 2x2 px in a rectangle with a size 1xlineHeight px 
      */
     public void OnGUI()
-    {
+    { 
+
         if (_canStart)
         {
             float counter = 0;

@@ -12,9 +12,7 @@ public class Directions
     public float Left;
 }
 
-
-
-public class JetController : MonoBehaviour
+public class JetController : Entity
 {
     [Header("GroundCheck")]
     [SerializeField] Transform groundCheckOrigin;
@@ -23,28 +21,69 @@ public class JetController : MonoBehaviour
 
     [Header("Player")]
     [SerializeField] Directions playerSpeed;
+    [SerializeField] int defaultHP;
 
     [Header("Tilt")]
     [SerializeField] float tiltSpeed;
     [SerializeField] float tiltSensitivity;
     [SerializeField] Directions tilt;
+    [SerializeField] GameObject gfx;
 
     [Header("Gun")]
     [SerializeField] GameObject bullet;
     [SerializeField] Transform[] shotSpawnSpots;
+    [SerializeField] float fireRate;
+    [SerializeField] int damage;
+    [SerializeField] ParticleSystem[] machinegunFX;
 
     Vector2 targetedTilt;
 
     bool isGrounded;
 
-	void FixedUpdate()
+    float fireTrashold;
+
+    private void Start()
     {
-        isGrounded = Physics2D.Raycast(groundCheckOrigin.position, Vector2.down, groundCheckLength, groundCheckMask);
+        SetDefaultHP(defaultHP);
+    }
+
+    RaycastHit2D[] hits;
+
+    void FixedUpdate()
+    {
+        isGrounded = Physics2D.RaycastNonAlloc(groundCheckOrigin.position, Vector2.down, hits, groundCheckLength, groundCheckMask) > 0;
+
+        gfx.transform.rotation = Quaternion.Euler
+        (
+            Mathf.LerpAngle
+            (
+                gfx.transform.rotation.eulerAngles.x,
+                targetedTilt.x * tiltSensitivity,
+                tiltSpeed * Time.fixedDeltaTime
+            ),
+
+            180,
+
+            Mathf.LerpAngle
+            (
+                gfx.transform.rotation.eulerAngles.z,
+                targetedTilt.y * tiltSensitivity,
+                tiltSpeed * Time.fixedDeltaTime
+            )
+        );
     }
 
     // Update is called once per frame
     void Update()
     {
+        if(Input.GetKeyDown(KeyCode.F1))
+        {
+            if (Time.timeScale == 0)
+                Time.timeScale = 1;
+            else
+                Time.timeScale = 0;
+        }
+
         if (Input.GetKey(KeyCode.A))
         {
             transform.localPosition += Vector3.left * playerSpeed.Left * Time.deltaTime;
@@ -75,23 +114,63 @@ public class JetController : MonoBehaviour
             targetedTilt = new Vector2(0, targetedTilt.y);
         }
 
-        if(Input.GetKeyDown(KeyCode.Space))
+        if(Input.GetKey(KeyCode.Space) && Time.time > fireTrashold)
         {
-            foreach(var p in shotSpawnSpots)
-            {
-                Instantiate(bullet, p.position, p.rotation);
-            }
+            fireTrashold = Time.time + fireRate;
+
+            Shoot();
         }
-        
+
+        /*
         var rot = Quaternion.Lerp(
-            transform.localRotation, 
+            gfx.transform.localRotation, 
             Quaternion.Euler(
                 new Vector3(
                     targetedTilt.x * tiltSensitivity,
-                    transform.localRotation.y,
+                    180,
                     targetedTilt.y * tiltSensitivity)),
             tiltSpeed * Time.deltaTime);
 
-        transform.localRotation = new Quaternion(rot.x, transform.localRotation.y, rot.z, rot.w);
+        gfx.transform.localRotation = new Quaternion(rot.x, transform.localRotation.y, rot.z, rot.w);
+        */
+    }
+
+    public override void Die()
+    {
+        StartCoroutine(Hide());
+    }
+
+    IEnumerator Hide()
+    {
+
+        foreach (var r in GetComponentsInChildren<Renderer>())
+            r.enabled = false;
+
+        yield return new WaitForSeconds(2);
+
+        foreach (var r in GetComponentsInChildren<Renderer>())
+            r.enabled = true;
+
+        SetDefaultHP(defaultHP);
+    }
+
+    void Shoot()
+    {
+
+        foreach (var f in machinegunFX)
+            f.Emit(50);
+        StartCoroutine(SpawnBullet());
+    }
+    IEnumerator SpawnBullet()
+    {
+        foreach (var p in shotSpawnSpots)
+        {
+            var go = Instantiate(bullet, p.position, p.rotation);
+            var bu = go.GetComponent<Bullet>();
+            bu.TargetTag = "Enemy";
+            bu.Damage = damage;
+            Destroy(go, 3);
+            yield return null;
+        }
     }
 }

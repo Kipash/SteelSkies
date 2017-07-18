@@ -83,6 +83,10 @@
     <Compile Include="Assets\Game\Scripts\Bullet.cs" />
     <Compile Include="Assets\Game\Scripts\Mover.cs" />
     <Compile Include="Assets\Game\Scripts\JetController.cs" />
+    <Compile Include="Assets\Game\Scripts\EnemyController.cs" />
+    <Compile Include="Assets\Game\Scripts\IHitteble.cs" />
+    <Compile Include="Assets\Game\Scripts\Entity.cs" />
+    <Compile Include="Assets\Game\Scripts\AppSettings.cs" />
     <Compile Include="Assets\Imported\FpsGraphAnalyzer\Demo\Scripts\AmountSlider.cs" />
     <Compile Include="Assets\Imported\FpsGraphAnalyzer\Demo\Scripts\DemoManager.cs" />
     <Compile Include="Assets\Imported\FpsGraphAnalyzer\Scripts\LineGenerator.cs" />

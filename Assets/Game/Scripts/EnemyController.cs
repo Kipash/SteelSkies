@@ -2,6 +2,7 @@
 using System.Collections;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 [Serializable]
 public class Tower
@@ -11,15 +12,15 @@ public class Tower
     public float MinAngle;
 
     [Header("Movement")]
-    public float CannonSpeed;
+    public float barrelSpeed;
     public float TowerSpeed;
 
     [Header("Tower")]
     public Transform TowerOrigin;
 
     [Header("Barrels")]
+    public Transform BarrelOrigin;
     public Barrel[] Barrels;
-
 }
 
 [Serializable]
@@ -27,9 +28,6 @@ public class Barrel
 {
     [Header("SpawnSpots")]
     public Transform SpawnSpot;
-
-    [Header("Barrel")]
-    public Transform BarrelOrigin;
 
     [Header("Effects")]
     public ParticleEffect[] Effects;
@@ -74,6 +72,8 @@ public class EnemyController : Entity
         StartCoroutine(Patrol());
         SetDefaultHP(defaultHP);
         InvokeRepeating("Shoot", fireRate + UnityEngine.Random.Range(0.1f, 1), fireRate);
+        if (shootTarget == null)
+            shootTarget = GameObject.FindGameObjectWithTag(targetTag).transform;
     }
 
     void Update()
@@ -81,10 +81,28 @@ public class EnemyController : Entity
         transform.localPosition = Vector2.Lerp(transform.localPosition, patrolTarget, Time.deltaTime * speed);
         foreach(var t in Towers)
         {
-            var rot = Quaternion.LookRotation(shootTarget.position - t.TowerOrigin.position);
-            //t.TowerOrigin.rotation = new Quaternion(0, rot.y, 0, 1);
-            foreach(var b in t.Barrels)
-                b.BarrelOrigin.localRotation = new Quaternion(rot.x + 0.25f, 0, 0, 1);
+            if (t.TowerOrigin.gameObject.active)
+            {
+                var towerDir = shootTarget.position - t.TowerOrigin.position;
+                var towerRot = Quaternion.LookRotation(new Vector3(towerDir.x, 0, towerDir.z));
+                t.TowerOrigin.rotation = Quaternion.Lerp(t.TowerOrigin.rotation, towerRot, t.TowerSpeed * Time.deltaTime);
+
+                var barrelDir = shootTarget.position - t.BarrelOrigin.position;
+                var barrelRot = Quaternion.LookRotation(new Vector3(barrelDir.x, barrelDir.y, 0));
+                barrelRot.y = 0;
+                barrelRot.z = 0;
+                t.BarrelOrigin.localRotation = Quaternion.LerpUnclamped(t.BarrelOrigin.localRotation, barrelRot, t.barrelSpeed * Time.deltaTime);
+
+                //t.BarrelOrigin.rotation = Quaternion.Lerp(t.BarrelOrigin.rotation, barrelRot, t.barrelSpeed * Time.deltaTime);
+
+                var rot = t.BarrelOrigin.localRotation;
+
+                rot.x = Mathf.Clamp(rot.x, t.MinAngle / 180, t.MaxAngle / 180);
+
+                t.BarrelOrigin.localRotation = rot;
+
+                Debug.DrawLine(shootTarget.position, t.BarrelOrigin.position, Color.cyan);
+            }
         }
     }
 
@@ -140,10 +158,11 @@ public class EnemyController : Entity
 
                     var p = b.SpawnSpot;
                     var go = Instantiate(bullet, p.position, p.rotation);
+
                     var bu = go.GetComponent<Bullet>();
                     bu.TargetTag = "Player";
                     bu.Damage = damage;
-                    Destroy(go, 3);
+
                 }
             }
         }

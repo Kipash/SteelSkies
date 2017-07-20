@@ -45,6 +45,5 @@ public class Bullet : MonoBehaviour
     void FixedUpdate()
     {
         transform.position += transform.right * speed * Time.fixedDeltaTime;
-
     }
 }

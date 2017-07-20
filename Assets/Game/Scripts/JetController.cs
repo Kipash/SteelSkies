@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 [Serializable]
 public class Directions
@@ -18,6 +20,7 @@ public class JetController : Entity
     [SerializeField] Transform groundCheckOrigin;
     [SerializeField] float groundCheckLength;
     [SerializeField] LayerMask groundCheckMask;
+    bool isGrounded;
 
     [Header("Player")]
     [SerializeField] Directions playerSpeed;
@@ -28,30 +31,44 @@ public class JetController : Entity
     [SerializeField] float tiltSensitivity;
     [SerializeField] Directions tilt;
     [SerializeField] GameObject gfx;
-
-    [Header("Gun")]
-    [SerializeField] GameObject bullet;
-    [SerializeField] Transform[] shotSpawnSpots;
-    [SerializeField] float fireRate;
-    [SerializeField] int damage;
-    [SerializeField] ParticleSystem[] machinegunFX;
-
     Vector2 targetedTilt;
 
-    bool isGrounded;
-
+    [Header("Gun")]
+    [SerializeField] Transform WeaponHolder;
+    Weapon[] weapons;
     float fireTrashold;
+
+    ///*
+
+    [Header("Temp")]
+    [SerializeField] Text text;
+    [SerializeField] Slider slider;
+    [SerializeField] Transform[] mods;
+    [SerializeField] float speed;
+
+    bool trackTime;
+
+    //*/
+    
 
     private void Start()
     {
         SetDefaultHP(defaultHP);
+
+        weapons = WeaponHolder.GetComponentsInChildren<Weapon>();
     }
 
     RaycastHit2D[] hits;
 
     void FixedUpdate()
     {
-        isGrounded = Physics2D.RaycastNonAlloc(groundCheckOrigin.position, Vector2.down, hits, groundCheckLength, groundCheckMask) > 0;
+        //int contacts = Physics2D.RaycastNonAlloc(groundCheckOrigin.position, Vector2.down, hits, groundCheckLength, groundCheckMask);
+        //print(contacts);
+        //isGrounded = contacts > 0;
+
+        isGrounded = Physics2D.Raycast(groundCheckOrigin.position, Vector2.down, groundCheckLength, groundCheckMask);
+
+        Debug.DrawLine(groundCheckOrigin.position, new Vector3(groundCheckOrigin.position.x, groundCheckOrigin.position.y - groundCheckLength, groundCheckOrigin.position.z), Color.green);
 
         gfx.transform.rotation = Quaternion.Euler
         (
@@ -76,7 +93,43 @@ public class JetController : Entity
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.F1))
+        if (trackTime)
+        {
+            var rawTime = Time.time - fireTrashold;
+            var fMod = weapons[0].GetFireMod(rawTime);
+            var time = (((int)((Time.time - fireTrashold) * 100f)) / 100f).ToString();
+            text.text = (fMod != null ? fMod.Name : "") + "\n" + time;
+            slider.value = rawTime;
+
+
+            int index = 0;
+            for (int i = 0; i < weapons[0].Data.FireMods.Length; i++)
+            {
+                if (weapons[0].Data.FireMods[i] == fMod)
+                {
+                    index = i;
+                    break;
+                }
+            }
+
+            for (int i = 0; i < mods.Length; i++)
+            {
+                var dif = 1 - Mathf.Abs(i - index) * 0.2f;
+                mods[i].localScale = Vector3.Lerp(mods[i].localScale, new Vector3(dif, dif, dif), speed * Time.deltaTime);
+            }
+        }
+        else
+        {
+            text.text = "";
+            for (int i = 0; i < mods.Length; i++)
+            {
+                var dif = 1 - Mathf.Abs(i - 0) * 0.2f;
+                mods[i].localScale = Vector3.Lerp(mods[i].localScale, new Vector3(dif, dif, dif), speed * Time.deltaTime);
+            }
+        }
+
+
+        if (Input.GetKeyDown(KeyCode.F1))
         {
             if (Time.timeScale == 0)
                 Time.timeScale = 1;
@@ -114,11 +167,18 @@ public class JetController : Entity
             targetedTilt = new Vector2(0, targetedTilt.y);
         }
 
-        if(Input.GetKey(KeyCode.Space) && Time.time > fireTrashold)
+        if(Input.GetKeyDown(KeyCode.Space))
         {
-            fireTrashold = Time.time + fireRate;
+            fireTrashold = Time.time;
+            trackTime = true;
+            slider.maxValue = weapons[0].Data.FireMods.Last().PrewarmTime;
+        }
+        if (Input.GetKeyUp(KeyCode.Space))
+        {
+            weapons[0].Shoot(Time.time - fireTrashold);
+            trackTime = false;
 
-            Shoot();
+            slider.value = 0;
         }
 
         /*
@@ -152,25 +212,5 @@ public class JetController : Entity
             r.enabled = true;
 
         SetDefaultHP(defaultHP);
-    }
-
-    void Shoot()
-    {
-
-        foreach (var f in machinegunFX)
-            f.Emit(50);
-        StartCoroutine(SpawnBullet());
-    }
-    IEnumerator SpawnBullet()
-    {
-        foreach (var p in shotSpawnSpots)
-        {
-            var go = Instantiate(bullet, p.position, p.rotation);
-            var bu = go.GetComponent<Bullet>();
-            bu.TargetTag = "Enemy";
-            bu.Damage = damage;
-            Destroy(go, 3);
-            yield return null;
-        }
     }
 }

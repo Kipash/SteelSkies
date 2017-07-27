@@ -23,11 +23,11 @@ public class test : MonoBehaviour
                          absDif.g < minDif &&
                          absDif.b < minDif;
             if (clouse && !IsInvoking())
-                InvokeRepeating("Start", 0, flashDuration * 4);
+                InvokeRepeating("Start", 0, flashDuration * 2);
         }
     }
 
-
+    
     void Start()
     {
         StartCoroutine(Flash());
@@ -35,10 +35,6 @@ public class test : MonoBehaviour
 
     IEnumerator Flash()
     {
-        ren.materials[0].SetColor("_EmissionColor", col);
-        yield return new WaitForSeconds(flashDuration);
-        ren.materials[0].SetColor("_EmissionColor", Color.black);
-        yield return new WaitForSeconds(flashDuration);
         ren.materials[0].SetColor("_EmissionColor", col);
         yield return new WaitForSeconds(flashDuration);
         ren.materials[0].SetColor("_EmissionColor", Color.black);

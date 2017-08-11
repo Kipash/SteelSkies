@@ -70,7 +70,7 @@ public class JetController : Entity
         SetDefaultHP(defaultHP);
 
         weapons = WeaponHolder.GetComponentsInChildren<Weapon>();
-        StartCoroutine(PlaySoundTracks());
+        //StartCoroutine(PlaySoundTracks());
     }
 
    

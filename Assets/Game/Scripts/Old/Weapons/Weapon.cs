@@ -5,7 +5,7 @@ using System;
 using System.Linq;
 using UnityEngine.Events;
 
-public enum WeaponType { none = 0, Primary = 1, Secundary = 2}
+public enum WeaponType { none = 0, Machinegun = 1, RocketLauncher = 2}
 
 [Serializable]
 public class FireSpot
@@ -26,6 +26,7 @@ public class WeaponFireMod
     
     [Header("Stats")]
     public bool ShotPerBarrel;
+    public float AmmoPerShot;
     public float PrewarmTime;
     public int Damage;
     public int AmmunitionPerShot;
@@ -36,6 +37,14 @@ public class WeaponFireMod
 [Serializable]
 public class WeaponData
 {
+    public bool HasAmmo
+    {
+        get
+        {
+            return Ammo != -1 && Ammo != 0;
+        }
+    }
+    public int Ammo;
     public string Name;
     public WeaponType Type;
     public WeaponFireMod[] FireMods;

@@ -82,14 +82,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Game\Scripts\Controllers\PlayerComponent.cs" />
+    <Compile Include="Assets\Game\Scripts\Controllers\SceneAutoSwitch.cs" />
     <Compile Include="Assets\Game\Scripts\Managers\AppInput.cs" />
     <Compile Include="Assets\Game\Scripts\Managers\AppManager.cs" />
     <Compile Include="Assets\Game\Scripts\Managers\MusicManager.cs" />
-    <Compile Include="Assets\Game\Scripts\Managers\PlayerMotor.cs" />
-    <Compile Include="Assets\Game\Scripts\Managers\WeaponManager.cs" />
+    <Compile Include="Assets\Game\Scripts\Managers\PlayerManagers\PlayerEffects.cs" />
+    <Compile Include="Assets\Game\Scripts\Managers\PlayerManagers\PlayerMotor.cs" />
+    <Compile Include="Assets\Game\Scripts\Managers\PlayerManagers\WeaponManager.cs" />
     <Compile Include="Assets\Game\Scripts\Models\CurrentBinds.cs" />
     <Compile Include="Assets\Game\Scripts\Models\KeyBind.cs" />
     <Compile Include="Assets\Game\Scripts\Models\KeyCallBack.cs" />
+    <Compile Include="Assets\Game\Scripts\Models\PooledPrefabs.cs" />
     <Compile Include="Assets\Game\Scripts\Models\RegisteredKeys.cs" />
     <Compile Include="Assets\Game\Scripts\Old\AppSettings.cs" />
     <Compile Include="Assets\Game\Scripts\Old\Bullet.cs" />
@@ -100,6 +103,7 @@
     <Compile Include="Assets\Game\Scripts\Old\Mover.cs" />
     <Compile Include="Assets\Game\Scripts\Old\PerlinShake.cs" />
     <Compile Include="Assets\Game\Scripts\Old\Weapons\Weapon.cs" />
+    <Compile Include="Assets\Game\Scripts\Services\PrefabPoolManager.cs" />
     <Compile Include="Assets\Game\Scripts\Services\Services.cs" />
     <Compile Include="Assets\Game\Scripts\Services\StaticCoroutines.cs" />
     <Compile Include="Assets\Imported\FpsGraphAnalyzer\Demo\Scripts\AmountSlider.cs" />
@@ -175,7 +179,6 @@
     <Compile Include="Assets\PostProcessing\Runtime\Utils\MaterialFactory.cs" />
     <Compile Include="Assets\PostProcessing\Runtime\Utils\RenderTextureFactory.cs" />
     <Compile Include="Assets\PostProcessing\Utilities\CustomMotionTexture\ExampleWheelController.cs" />
-    <Compile Include="Assets\test.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Imported\Standard Assets\Environment\Water (Basic)\Shaders\FXWaterBasic.shader" />

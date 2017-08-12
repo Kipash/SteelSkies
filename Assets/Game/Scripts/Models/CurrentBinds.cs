@@ -8,7 +8,7 @@ public class CurrentBinds
 
     public static void SetDefaults()
     {
-        BindedKeys.Add(RegisteredKeys.Fire, new KeyCode[] { KeyCode.Mouse0, KeyCode.LeftAlt });
+        BindedKeys.Add(RegisteredKeys.Fire, new KeyCode[] { KeyCode.Space, KeyCode.Mouse0 });
 
         BindedKeys.Add(RegisteredKeys.MoveLeft, new KeyCode[] { KeyCode.A, KeyCode.LeftArrow });
         BindedKeys.Add(RegisteredKeys.MoveRight, new KeyCode[] { KeyCode.D, KeyCode.RightArrow });

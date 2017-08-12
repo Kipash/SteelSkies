@@ -21,7 +21,7 @@ public class WeaponFireMod
     public string Name;
 
     [Header("Visuals")]
-    public GameObject Projectile;
+    public PooledPrefabs Projectile;
     public FireSpot[] FireSpots;
     
     [Header("Stats")]
@@ -41,10 +41,14 @@ public class WeaponData
     {
         get
         {
-            return Ammo != -1 && Ammo != 0;
+            //return (Ammo != 0 ? (Ammo == -1 ? true : false) : (Ammo > 0));
+            return Ammo == -1 || Ammo > 0;
         }
     }
     public int Ammo;
+
+    public GameObject Graphics;
+
     public string Name;
     public WeaponType Type;
     public WeaponFireMod[] FireMods;
@@ -61,10 +65,22 @@ public class Weapon : MonoBehaviour
 
     protected virtual void CreateProjectile(WeaponFireMod currFireMod)
     {
-        var go = Instantiate(currFireMod.Projectile, currFireMod.FireSpots[0].Spot.position, currFireMod.FireSpots[0].Spot.rotation);
-        var bu = go.GetComponent<Bullet>();
-        bu.TargetTag = "Enemy";
-        bu.Damage = currFireMod.Damage;
+        foreach (var fireSpot in currFireMod.FireSpots)
+        {
+            var point = fireSpot.Spot.right;
+            float rot_z = Mathf.Atan2(point.y, point.x) * Mathf.Rad2Deg;
+
+            var go = Services.Instance.PoolManager.GetPooledPrefab(currFireMod.Projectile);
+            go.transform.position = fireSpot.Spot.position;
+            go.transform.rotation = Quaternion.Euler(0f, 0f, rot_z);
+
+            foreach (var x in go.GetComponentsInChildren<TrailRenderer>())
+                x.Clear();
+
+            var bu = go.GetComponent<Bullet>();
+            bu.TargetTag = "Enemy";
+            bu.Damage = currFireMod.Damage;
+        }
     }
 
     public void Shoot(float shootTime)

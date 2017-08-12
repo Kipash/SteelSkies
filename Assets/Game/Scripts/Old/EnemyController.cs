@@ -62,6 +62,8 @@ public class EnemyController : Entity
     [SerializeField] float speed;
 
     [Header("Weaponry")]
+    [SerializeField] bool disable;
+    [SerializeField] bool optimize = true;
     [SerializeField] float fireRate;
     [SerializeField] int damage;
     [SerializeField] GameObject bullet;
@@ -155,6 +157,9 @@ public class EnemyController : Entity
 
     void Shoot()
     {
+        if (disable)
+            return;
+
         foreach (var t in Towers)
         {
             if (t.TowerOrigin.gameObject.active)
@@ -165,8 +170,20 @@ public class EnemyController : Entity
                         e.Particle.Emit(e.Amount);
 
                     var p = b.SpawnSpot;
-                    var go = Instantiate(bullet, p.position, p.rotation);
 
+                    GameObject go;
+                    if (optimize)
+                    {
+                        go = Services.Instance.PoolManager.GetPooledPrefab(PooledPrefabs.Bullet);
+                        go.transform.position = p.position;
+                        go.transform.rotation = p.rotation;
+                        foreach (var x in go.GetComponentsInChildren<TrailRenderer>())
+                            x.Clear();
+                    }
+                    else
+                    {
+                        go = Instantiate(bullet, p.position, p.rotation);
+                    }
                     var bu = go.GetComponent<Bullet>();
                     bu.TargetTag = "Player";
                     bu.Damage = damage;

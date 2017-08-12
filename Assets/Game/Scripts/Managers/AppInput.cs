@@ -9,8 +9,6 @@ namespace App.Player.Services
 {
     public class AppInput
     {
-        public static AppInput Instance;
-
         public bool Debug;
         List<KeyBind> keyBinds = new List<KeyBind>();
 
@@ -54,6 +52,9 @@ namespace App.Player.Services
         }
         public void CheckInput()
         {
+            if (keyBinds.Count == 0)
+                return;
+
             foreach (var b in keyBinds)
             {
                 foreach (var keycode in b.KeyCodes)
@@ -68,10 +69,15 @@ namespace App.Player.Services
                         foreach (var m in b.CallBackOnPass.OnRelase)
                             AddToInvoke(m, b);
                     else
-                        foreach (var m in b.CallBackOnFail)
-                            AddToInvoke(m, b);
+                        if(b.CallBackOnFail != null)
+                            foreach (var m in b.CallBackOnFail)
+                                AddToInvoke(m, b);
                 }
             }
+            if(currInputs.Count != 0)
+                Invoke();
+            else
+                OnCallbacksDone(new RegisteredKeys[0]);
         }
         void AddToInvoke(Action method, KeyBind bind)
         {
@@ -94,16 +100,30 @@ namespace App.Player.Services
 
             */
 
-            foreach (var input in currInputs.ToArray())
+            var tempInputs = currInputs.ToArray();
+
+            foreach (var input in tempInputs)
             {
-                if(currInputs.Any(x => x.bind.Key == input.bind.JamKey))
+                if(tempInputs.Any(x => x.bind.Key == input.bind.JamKey))
                 {
-                    var jammedBinds = currInputs
+                    var jammedBinds = tempInputs
                         .Where(x => x.bind.Key == input.bind.JamKey)
-                        .Select((x) => { currInputs.Remove(x); return x; });
-                    foreach (var jammedBind in jammedBinds)
-                        foreach (var m in jammedBind.bind.CallBackOnFail)
-                            m();
+                        .Select((x) => { currInputs.Remove(x); return x; })
+                        .ToArray();
+
+                    if (jammedBinds != null)
+                    {
+                        foreach (var jammedBind in jammedBinds)
+                        {
+                            if (jammedBind.bind.CallBackOnFail != null)
+                            {
+                                foreach (var m in jammedBind.bind.CallBackOnFail)
+                                {
+                                    m();
+                                }
+                            }
+                        }
+                    }
                     
                     currInputs.RemoveAll(x => jammedBinds.Contains(x));
                 }
@@ -114,6 +134,8 @@ namespace App.Player.Services
                 }
             }
             OnCallbacksDone(calledKeys.ToArray());
+
+            currInputs.Clear();
         }
     }
 }

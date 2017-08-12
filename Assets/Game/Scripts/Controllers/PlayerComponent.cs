@@ -4,21 +4,25 @@ using App.Player.Services;
 using App.Player.Models;
 using System;
 
-public class PlayerComponent : MonoBehaviour
+public class PlayerComponent : Entity
 {
-    [SerializeField] PlayerMotor motor;
+    [SerializeField] PlayerMotor motor; 
     [SerializeField] WeaponManager weaponManager;
+    [SerializeField] PlayerEffects playerEffects;
 
     private void Start()
     {
         RegisterCallBacks();
 
         weaponManager.Start();
+        playerEffects.Start();
     }
     private void Update()
     {
-        //motor.Update();
+        playerEffects.SetTransition(weaponManager.GetCurrentWarmUp);
+        playerEffects.Update();
     }
+
     private void FixedUpdate()
     {
         motor.FixedUpdate();
@@ -29,9 +33,9 @@ public class PlayerComponent : MonoBehaviour
     {
         #region PlayerMotor
 
-        AppInput.Instance.OnCallbacksDone += motor.PlayerMotor_OnCallbacksDone;
+        Services.Instance.AppInput.OnCallbacksDone += motor.PlayerMotor_OnCallbacksDone;
 
-        AppInput.Instance.AddBind(new KeyBind()
+        Services.Instance.AppInput.AddBind(new KeyBind()
         {
             Name = "Move Left",
             KeyCodes = CurrentBinds.BindedKeys[RegisteredKeys.MoveLeft],
@@ -46,7 +50,7 @@ public class PlayerComponent : MonoBehaviour
         },
         typeof(PlayerComponent));
 
-        AppInput.Instance.AddBind(new KeyBind()
+        Services.Instance.AppInput.AddBind(new KeyBind()
         {
             Name = "Move Right",
             KeyCodes = CurrentBinds.BindedKeys[RegisteredKeys.MoveRight],
@@ -61,7 +65,7 @@ public class PlayerComponent : MonoBehaviour
         },
         typeof(PlayerComponent));
 
-        AppInput.Instance.AddBind(new KeyBind()
+        Services.Instance.AppInput.AddBind(new KeyBind()
         {
             Name = "Move Up",
             KeyCodes = CurrentBinds.BindedKeys[RegisteredKeys.MoveUp],
@@ -76,7 +80,7 @@ public class PlayerComponent : MonoBehaviour
         },
         typeof(PlayerComponent));
 
-        AppInput.Instance.AddBind(new KeyBind()
+        Services.Instance.AppInput.AddBind(new KeyBind()
         {
             Name = "Move Down",
             KeyCodes = CurrentBinds.BindedKeys[RegisteredKeys.MoveDown],
@@ -95,7 +99,7 @@ public class PlayerComponent : MonoBehaviour
 
         #region WeaponManager
 
-        AppInput.Instance.AddBind(new KeyBind()
+        Services.Instance.AppInput.AddBind(new KeyBind()
         {
             Name = "Shoot",
             KeyCodes = CurrentBinds.BindedKeys[RegisteredKeys.Fire],
@@ -114,6 +118,13 @@ public class PlayerComponent : MonoBehaviour
         #endregion
     }
 
-
-
+    public override void Die()
+    {
+        //base.Die();
+    }
+    public override void Hit(int damage)
+    {
+        playerEffects.HitEffect();
+        base.Hit(damage);
+    }
 }

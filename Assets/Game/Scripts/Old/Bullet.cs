@@ -12,19 +12,21 @@ public class Bullet : MonoBehaviour
     float speed;
 
     // Use this for initialization
-    void Start()
+    private void OnEnable()
     {
+        StartCoroutine(OnEnabled());
+    }
+
+    IEnumerator OnEnabled()
+    {
+        yield return null;
+
         var pos = transform.position;
         transform.position = new Vector3(pos.x, pos.y, 0);
         Gfx.transform.position = pos;
 
-        transform.localRotation = Quaternion.Euler(
-            transform.localRotation.eulerAngles.x,
-            Snap(transform.localRotation.eulerAngles.y),
-            transform.localRotation.eulerAngles.z);
-
         speed = Random.Range(minSpeed, maxSpeed);
-        Destroy(gameObject, destroyDelay);
+        Invoke("Destroy", destroyDelay);
     }
 
     void OnTriggerEnter2D(Collider2D collision)
@@ -42,7 +44,7 @@ public class Bullet : MonoBehaviour
             {
                 Debug.LogError(collision.name + " should have a IHitteble in it's hierarchy!");
             }
-            Destroy(gameObject);
+            Destroy();
         }
     }
     
@@ -52,6 +54,7 @@ public class Bullet : MonoBehaviour
         transform.position += transform.right * speed * Time.fixedDeltaTime;
     }
 
+    //???
     float Snap(float val)
     {
         int neg = val < 0 ? -1 : 1;
@@ -59,5 +62,14 @@ public class Bullet : MonoBehaviour
         var wVal = Mathf.Abs(val);
         var res = wVal < 45 ? 0 : wVal;
         return res * neg;
+    }
+
+    void Destroy()
+    {
+        if (!Services.Instance.PoolManager.DeactivatePrefab(gameObject))
+        {
+            Debug.LogErrorFormat("GameObject {0} is acting as PooledPrefab, object was destroyed!", gameObject.name);
+            Destroy(gameObject);
+        }
     }
 }

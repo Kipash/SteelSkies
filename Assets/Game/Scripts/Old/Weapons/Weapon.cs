@@ -77,7 +77,7 @@ public class Weapon : MonoBehaviour
             foreach (var x in go.GetComponentsInChildren<TrailRenderer>())
                 x.Clear();
 
-            var bu = go.GetComponent<Bullet>();
+            var bu = go.GetComponent<Projectile>();
             bu.TargetTag = "Enemy";
             bu.Damage = currFireMod.Damage;
         }
@@ -85,6 +85,8 @@ public class Weapon : MonoBehaviour
 
     public void Shoot(float shootTime)
     {
+        Services.Instance.AudioService.PlaySound(SoundEffects.Machinegun);
+
         WeaponFireMod fMode = GetFireMod(shootTime);
         if (fMode != null)
             CreateProjectile(fMode);

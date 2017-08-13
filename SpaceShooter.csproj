@@ -13,11 +13,13 @@
     <TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>Unity Subset v3.5</TargetFrameworkProfile>
-    <CompilerResponseFile></CompilerResponseFile>
+    <CompilerResponseFile>
+    </CompilerResponseFile>
     <UnityProjectType>Game:1</UnityProjectType>
     <UnityBuildTarget>StandaloneOSXIntel:4</UnityBuildTarget>
     <UnityVersion>2017.1.0f3</UnityVersion>
-    <RootNamespace></RootNamespace>
+    <RootNamespace>
+    </RootNamespace>
     <LangVersion>4</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -92,10 +94,12 @@
     <Compile Include="Assets\Game\Scripts\Models\CurrentBinds.cs" />
     <Compile Include="Assets\Game\Scripts\Models\KeyBind.cs" />
     <Compile Include="Assets\Game\Scripts\Models\KeyCallBack.cs" />
+    <Compile Include="Assets\Game\Scripts\Models\Explosion.cs" />
+    <Compile Include="Assets\Game\Scripts\Models\SoundEffects.cs" />
     <Compile Include="Assets\Game\Scripts\Models\PooledPrefabs.cs" />
     <Compile Include="Assets\Game\Scripts\Models\RegisteredKeys.cs" />
     <Compile Include="Assets\Game\Scripts\Old\AppSettings.cs" />
-    <Compile Include="Assets\Game\Scripts\Old\Bullet.cs" />
+    <Compile Include="Assets\Game\Scripts\Old\Projectile.cs" />
     <Compile Include="Assets\Game\Scripts\Old\EnemyController.cs" />
     <Compile Include="Assets\Game\Scripts\Old\Entity.cs" />
     <Compile Include="Assets\Game\Scripts\Old\IHitteble.cs" />
@@ -103,6 +107,7 @@
     <Compile Include="Assets\Game\Scripts\Old\Mover.cs" />
     <Compile Include="Assets\Game\Scripts\Old\PerlinShake.cs" />
     <Compile Include="Assets\Game\Scripts\Old\Weapons\Weapon.cs" />
+    <Compile Include="Assets\Game\Scripts\Services\AudioService.cs" />
     <Compile Include="Assets\Game\Scripts\Services\PrefabPoolManager.cs" />
     <Compile Include="Assets\Game\Scripts\Services\Services.cs" />
     <Compile Include="Assets\Game\Scripts\Services\StaticCoroutines.cs" />

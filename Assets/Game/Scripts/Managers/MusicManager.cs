@@ -5,7 +5,17 @@ using System;
 [Serializable]
 public class MusicManager
 {
-    [SerializeField] AudioSource source;
+    AudioSource source;
+    AudioSource audioSource
+    {
+        get
+        {
+            if (source == null)
+                source = Services.Instance.AudioService.GetPermanentSource();
+            return source;
+        }
+    }
+        
     [SerializeField] AudioClip[] clips;
 
     AudioClip nextClip;
@@ -32,9 +42,9 @@ public class MusicManager
 
     void PauseMusic()
     {
-        if (source.isPlaying)
+        if (audioSource.isPlaying)
         {
-            source.Pause();
+            audioSource.Pause();
             Services.Instance.StaticCoroutines.CancelInvoke(callBack);
         }
         else
@@ -42,12 +52,12 @@ public class MusicManager
     }
     void StartMusic()
     {
-        if (source.clip != null)
+        if (audioSource.clip != null)
         {
-            if (!source.isPlaying)
+            if (!audioSource.isPlaying)
             {
-                source.UnPause();
-                callBack.Delay = source.clip.length - source.time;
+                audioSource.UnPause();
+                callBack.Delay = audioSource.clip.length - audioSource.time;
                 Services.Instance.StaticCoroutines.Invoke(callBack);
             }
         }
@@ -58,8 +68,8 @@ public class MusicManager
     {
         if (clips.Length != 0)
         {
-            source.clip = (nextClip == null ? clips[0] : clips[currClipIndex]);
-            source.Play();
+            audioSource.clip = (nextClip == null ? clips[0] : clips[currClipIndex]);
+            audioSource.Play();
 
             currClipIndex++;
             if (currClipIndex >= clips.Length)
@@ -69,7 +79,7 @@ public class MusicManager
             if (callBack == null)
                 callBack = new DelayedCall() { CallBack = NextTrack };
 
-            callBack.Delay = source.clip.length - source.time;
+            callBack.Delay = audioSource.clip.length - audioSource.time;
             Services.Instance.StaticCoroutines.Invoke(callBack);
         }
     }

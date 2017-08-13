@@ -160,6 +160,8 @@ public class EnemyController : Entity
         if (disable)
             return;
 
+        Services.Instance.AudioService.PlaySound(SoundEffects.Machinegun);
+
         foreach (var t in Towers)
         {
             if (t.TowerOrigin.gameObject.active)
@@ -184,7 +186,7 @@ public class EnemyController : Entity
                     {
                         go = Instantiate(bullet, p.position, p.rotation);
                     }
-                    var bu = go.GetComponent<Bullet>();
+                    var bu = go.GetComponent<Projectile>();
                     bu.TargetTag = "Player";
                     bu.Damage = damage;
 

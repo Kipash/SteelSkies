@@ -3,6 +3,7 @@ using System.Collections;
 using App.Player.Services;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 public class Services : MonoBehaviour
 {
@@ -15,44 +16,38 @@ public class Services : MonoBehaviour
     [Header(" - MusicManager - ")]
     public MusicManager MusicManager;
 
+    [Header(" - AudioService - ")]
+    public AudioService AudioService;
+
     [Header(" - AppInput - ")]
     public AppInput AppInput = new AppInput();
+
 
     [Header(" - PoolManager - ")]
     public PrefabPoolManager PoolManager;
 
-    void Start()
+    void Awake()
     {
+        var t = DateTime.Now;
+
+
         if (Instance != null && Instance != this)
             Destroy(gameObject);
         else
             Instance = this;
+        
+        PoolManager.Start();
+
+        AudioService.Start();
 
         MusicManager.IsPaused = false;
 
-        PoolManager.Start();
-    }
 
-    List<GameObject> objs = new List<GameObject>();
+        print("All services loaded in " + (DateTime.Now - t).TotalMilliseconds + " ms.");
+    }
 
     private void Update()
     {
         AppInput.CheckInput();
-
-        if(Input.GetKeyDown(KeyCode.F1))
-        {
-            var g = PoolManager.GetPooledPrefab(PooledPrefabs.Bullet);
-            g.transform.parent = null;
-            objs.Add(g);
-        }
-        if (Input.GetKeyDown(KeyCode.F2))
-        {
-            if (objs.Count != 0)
-            {
-                var g = objs.First();
-                objs.Remove(g);
-                PoolManager.DeactivatePrefab(g);
-            }
-        }
     }
 }

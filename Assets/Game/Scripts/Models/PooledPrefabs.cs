@@ -13,7 +13,8 @@ public enum PooledPrefabs
     #endregion
     #region Effects
 
-    Explsion = 5
+    Explsion = 5,
+    SmallExplsion = 6
 
     #endregion
 }

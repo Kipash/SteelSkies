@@ -77,9 +77,9 @@ public class Projectile : MonoBehaviour
 
     void CreateExplosion(Collider2D original)
     {
-        Services.Instance.AudioService.PlaySound(SoundEffects.Explosion);
+        AppServices.Instance.AudioService.PlaySound(SoundEffects.Explosion);
 
-        var g = Services.Instance.PoolManager.GetPooledPrefab(explosion.Prefab);
+        var g = AppServices.Instance.PoolManager.GetPooledPrefab(explosion.Prefab);
         g.transform.position = transform.position;
         g.transform.position = transform.position;
 
@@ -109,13 +109,13 @@ public class Projectile : MonoBehaviour
         }
 
         explosionCallBack.Delay = explosion.Duration;
-        explosionCallBack.CallBack = () => { Services.Instance.PoolManager.DeactivatePrefab(g); };
-        Services.Instance.StaticCoroutines.Invoke(explosionCallBack); 
+        explosionCallBack.CallBack = () => { AppServices.Instance.PoolManager.DeactivatePrefab(g); };
+        AppServices.Instance.StaticCoroutines.Invoke(explosionCallBack); 
     }
 
     void Destroy()
     {
-        if (!Services.Instance.PoolManager.DeactivatePrefab(gameObject))
+        if (!AppServices.Instance.PoolManager.DeactivatePrefab(gameObject))
         {
             Debug.LogErrorFormat("GameObject {0} is acting as PooledPrefab, object was destroyed!", gameObject.name);
             Destroy(gameObject);

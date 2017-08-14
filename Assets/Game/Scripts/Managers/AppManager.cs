@@ -1,22 +1,49 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.IO;
+using System;
+using System.Linq;
+using MovementEffects;
 
 public class AppManager : MonoBehaviour
 {
-    public static AppManager Instance;
-    [SerializeField] bool AutoSwitchScene;
+    public static AppManager Instance { get; private set; }
+    public event Action OnLoadLevel;
 
-    void Start()
+    void Awake()
     { 
         if (Instance != null && Instance != this)
             Destroy(gameObject);
         else
             Instance = this;
-
-        if (Application.loadedLevel == 0 && AutoSwitchScene)
-            Application.LoadLevel(Application.loadedLevel + 1);
-
+        
         CurrentBinds.SetDefaults();
         DontDestroyOnLoad(gameObject);
+
+        /* -- commit ID --
+
+        var dir = new DirectoryInfo(Application.dataPath);
+
+        var path = dir.Parent.FullName + @"\.git\logs\refs\heads\master";
+        var lines = File.ReadAllLines(path);
+
+        print("the one: " + lines.Last().Split(' ')[1].Substring(0, 8));
+
+        */
+
+        OnLoadLevel += ResetCoroutine_OnLoadLevel;
+    }
+
+    void ResetCoroutine_OnLoadLevel()
+    {
+        Timing.KillCoroutines();
+    }
+
+    public void LoadLevel(int index)
+    {
+        if(OnLoadLevel != null)
+            OnLoadLevel.Invoke();
+
+        Application.LoadLevel(index);
     }
 }

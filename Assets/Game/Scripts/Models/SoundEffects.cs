@@ -8,5 +8,7 @@ public enum SoundEffects
     Explosion = 1,
     Machinegun = 2,
 
-    SwapWeapons = 3
+    SwapWeapons = 3,
+
+    Warning = 4,
 }

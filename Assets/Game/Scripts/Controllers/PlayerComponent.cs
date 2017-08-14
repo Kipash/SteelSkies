@@ -10,12 +10,17 @@ public class PlayerComponent : Entity
     [SerializeField] WeaponManager weaponManager;
     [SerializeField] PlayerEffects playerEffects;
 
+    [Header("Player")]
+    [SerializeField] int defaultHP;
+
     private void Start()
     {
         RegisterCallBacks();
 
         weaponManager.Start();
         playerEffects.Start();
+
+        SetDefaultHP(defaultHP);
     }
     private void Update()
     {
@@ -28,14 +33,18 @@ public class PlayerComponent : Entity
         motor.FixedUpdate();
     }
 
+    private void OnDestroy()
+    {
+        UnRegisterCallbacks();
+    }
 
     void RegisterCallBacks()
     {
         #region PlayerMotor
 
-        Services.Instance.AppInput.OnCallbacksDone += motor.PlayerMotor_OnCallbacksDone;
+        AppServices.Instance.AppInput.OnCallbacksDone += motor.PlayerMotor_OnCallbacksDone;
 
-        Services.Instance.AppInput.AddBind(new KeyBind()
+        AppServices.Instance.AppInput.AddBind(new KeyBind()
         {
             Name = "Move Left",
             KeyCodes = CurrentBinds.BindedKeys[RegisteredKeys.MoveLeft],
@@ -50,7 +59,7 @@ public class PlayerComponent : Entity
         },
         typeof(PlayerComponent));
 
-        Services.Instance.AppInput.AddBind(new KeyBind()
+        AppServices.Instance.AppInput.AddBind(new KeyBind()
         {
             Name = "Move Right",
             KeyCodes = CurrentBinds.BindedKeys[RegisteredKeys.MoveRight],
@@ -65,7 +74,7 @@ public class PlayerComponent : Entity
         },
         typeof(PlayerComponent));
 
-        Services.Instance.AppInput.AddBind(new KeyBind()
+        AppServices.Instance.AppInput.AddBind(new KeyBind()
         {
             Name = "Move Up",
             KeyCodes = CurrentBinds.BindedKeys[RegisteredKeys.MoveUp],
@@ -80,7 +89,7 @@ public class PlayerComponent : Entity
         },
         typeof(PlayerComponent));
 
-        Services.Instance.AppInput.AddBind(new KeyBind()
+        AppServices.Instance.AppInput.AddBind(new KeyBind()
         {
             Name = "Move Down",
             KeyCodes = CurrentBinds.BindedKeys[RegisteredKeys.MoveDown],
@@ -99,7 +108,7 @@ public class PlayerComponent : Entity
 
         #region WeaponManager
 
-        Services.Instance.AppInput.AddBind(new KeyBind()
+        AppServices.Instance.AppInput.AddBind(new KeyBind()
         {
             Name = "Shoot",
             KeyCodes = CurrentBinds.BindedKeys[RegisteredKeys.Fire],
@@ -118,9 +127,17 @@ public class PlayerComponent : Entity
         #endregion
     }
 
+    void UnRegisterCallbacks()
+    {
+        AppServices.Instance.AppInput.RemoveBind(typeof(PlayerComponent));
+    }
+
     public override void Die()
     {
-        //base.Die();
+        motor.Disabled = true;
+        playerEffects.DieEffect();
+        GameServices.Instance.GameManager.ResetLevel(0.5f);
+        gameObject.SetActive(false);
     }
     public override void Hit(int damage)
     {

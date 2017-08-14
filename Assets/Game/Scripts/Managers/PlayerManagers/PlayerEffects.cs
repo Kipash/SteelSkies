@@ -6,6 +6,8 @@ using UnityEngine.UI;
 [Serializable]
 public class PlayerEffects
 {
+    internal enum EffectMode { none, Charging, Damage }
+
     [SerializeField] Renderer renderer;
     
     [SerializeField] Color chargedColor;
@@ -20,11 +22,11 @@ public class PlayerEffects
     bool isFlashing;
     bool isFlashingLastFrame;
 
+    EffectMode mode;
+
     public void Start()
     {
         perlinShake = Camera.main.GetComponent<PerlinShake>();
-        perlinShake.testProjection = true;
-
     }
 
     public void Update()
@@ -53,7 +55,7 @@ public class PlayerEffects
         flashCall.CallBack = () => { Flash(!b); };
         flashCall.Delay = flashDuration;
         flashCall.Canceled = false;
-        Services.Instance.StaticCoroutines.Invoke(flashCall);
+        AppServices.Instance.StaticCoroutines.Invoke(flashCall);
     }
     void SetColor(Color col)
     {
@@ -78,5 +80,10 @@ public class PlayerEffects
     {
         perlinShake.testRotation = true;
         perlinShake.testRotation = true;
+    }
+
+    public void DieEffect()
+    {
+        perlinShake.testProjection = true;
     }
 }

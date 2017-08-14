@@ -63,14 +63,19 @@ public class Weapon : MonoBehaviour
         Data.FireMods = Data.FireMods.OrderBy(x => x.PrewarmTime).ToArray();
     }
 
-    protected virtual void CreateProjectile(WeaponFireMod currFireMod)
+    public void CreateProjectile(WeaponFireMod currFireMod)
     {
+        Start();
+
+        print(Data.Graphics.name);
         foreach (var fireSpot in currFireMod.FireSpots)
         {
-            var point = fireSpot.Spot.right;
+            var t = fireSpot.Spot;
+
+            var point = t.gameObject.transform.right;
             float rot_z = Mathf.Atan2(point.y, point.x) * Mathf.Rad2Deg;
 
-            var go = Services.Instance.PoolManager.GetPooledPrefab(currFireMod.Projectile);
+            var go = AppServices.Instance.PoolManager.GetPooledPrefab(currFireMod.Projectile);
             go.transform.position = fireSpot.Spot.position;
             go.transform.rotation = Quaternion.Euler(0f, 0f, rot_z);
 
@@ -85,7 +90,7 @@ public class Weapon : MonoBehaviour
 
     public void Shoot(float shootTime)
     {
-        Services.Instance.AudioService.PlaySound(SoundEffects.Machinegun);
+        AppServices.Instance.AudioService.PlaySound(SoundEffects.Machinegun);
 
         WeaponFireMod fMode = GetFireMod(shootTime);
         if (fMode != null)

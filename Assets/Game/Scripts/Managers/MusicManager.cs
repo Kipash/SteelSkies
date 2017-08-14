@@ -11,7 +11,7 @@ public class MusicManager
         get
         {
             if (source == null)
-                source = Services.Instance.AudioService.GetPermanentSource();
+                source = AppServices.Instance.AudioService.GetPermanentSource();
             return source;
         }
     }
@@ -45,7 +45,7 @@ public class MusicManager
         if (audioSource.isPlaying)
         {
             audioSource.Pause();
-            Services.Instance.StaticCoroutines.CancelInvoke(callBack);
+            AppServices.Instance.StaticCoroutines.CancelInvoke(callBack);
         }
         else
             Debug.LogWarning("No music is playing, cant be stoped!");
@@ -58,7 +58,7 @@ public class MusicManager
             {
                 audioSource.UnPause();
                 callBack.Delay = audioSource.clip.length - audioSource.time;
-                Services.Instance.StaticCoroutines.Invoke(callBack);
+                AppServices.Instance.StaticCoroutines.Invoke(callBack);
             }
         }
         else
@@ -80,7 +80,7 @@ public class MusicManager
                 callBack = new DelayedCall() { CallBack = NextTrack };
 
             callBack.Delay = audioSource.clip.length - audioSource.time;
-            Services.Instance.StaticCoroutines.Invoke(callBack);
+            AppServices.Instance.StaticCoroutines.Invoke(callBack);
         }
     }
 }

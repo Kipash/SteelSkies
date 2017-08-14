@@ -26,6 +26,9 @@ public class PlayerMotor
     [Header("Generic")]
     [SerializeField] Transform transform;
 
+
+    public bool Disabled;
+
     public void FixedUpdate()
     {
         //int contacts = Physics2D.RaycastNonAlloc(groundCheckOrigin.position, Vector2.down, hits, groundCheckLength, groundCheckMask);
@@ -60,29 +63,34 @@ public class PlayerMotor
 
     public void MoveUp()
     {
-        transform.localPosition += Vector3.up * playerSpeed.Up * Time.deltaTime;
-        targetedTilt = new Vector2(tilt.Up, targetedTilt.y);        
+        Move(Vector3.up * playerSpeed.Up * Time.deltaTime, new Vector2(tilt.Up, targetedTilt.y));        
     }
 
     public void MoveDown()
     {
         if (!isGrounded)
         {
-            transform.localPosition += Vector3.down * playerSpeed.Down * Time.deltaTime;
-            targetedTilt = new Vector2(tilt.Down, targetedTilt.y);
+            Move(Vector3.down * playerSpeed.Down * Time.deltaTime, new Vector2(tilt.Down, targetedTilt.y));
         }
     }
 
     public void MoveLeft()
     {
-        transform.localPosition += Vector3.left * playerSpeed.Left * Time.deltaTime;
-        targetedTilt = new Vector2(targetedTilt.x, tilt.Left);
+        Move(Vector3.left * playerSpeed.Left * Time.deltaTime, new Vector2(targetedTilt.x, tilt.Left));
     }
 
     public void MoveRight()
     {
-        transform.localPosition += Vector3.right * playerSpeed.Right * Time.deltaTime;
-        targetedTilt = new Vector2(targetedTilt.x, tilt.Right);
+        Move(Vector3.right * playerSpeed.Right * Time.deltaTime, new Vector2(targetedTilt.x, tilt.Right));
+    }
+
+    void Move(Vector3 motion, Vector2 tilt)
+    {
+        if(!Disabled)
+        {
+            transform.localPosition += motion;
+            targetedTilt = tilt;
+        }
     }
 
     void ResetHorizontal()

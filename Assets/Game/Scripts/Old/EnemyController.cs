@@ -56,7 +56,8 @@ public class EnemyController : Entity
     [SerializeField] string targetTag;
     Vector2 patrolTarget;
     [SerializeField] Transform shootTarget;
-    [SerializeField] GameObject dieEffects;
+    [SerializeField] float explosionDuration;
+    [SerializeField] Renderer renderer;
 
     [Header("Movement")]
     [SerializeField] float speed;
@@ -68,15 +69,28 @@ public class EnemyController : Entity
     [SerializeField] int damage;
     [SerializeField] GameObject bullet;
     [SerializeField] Tower[] Towers;
-    
-    void Start()
+
+    [Header("Explosion")]
+    [SerializeField] Explosion explosion;
+
+    DelayedCall explosionCallBack = new DelayedCall();
+
+    private void OnEnable()
     {
+        renderer.materials[0].SetColor("_EmissionColor", Color.black);
         //shootTarget = GameObject.FindGameObjectWithTag(targetTag).transform;
         StartCoroutine(Patrol());
         SetDefaultHP(defaultHP);
-        InvokeRepeating("Shoot", fireRate + UnityEngine.Random.Range(0.1f, 1), fireRate);
+        InvokeRepeating("Shoot", fireRate + UnityEngine.Random.Range(0.1f, 5), fireRate);
         if (shootTarget == null)
-            shootTarget = GameObject.FindGameObjectWithTag(targetTag).transform;
+        {
+            var go = GameObject.FindGameObjectWithTag(targetTag);
+            shootTarget = go != null ? go.transform : null;
+        }
+    }
+    private void OnDisable()
+    {
+        CancelInvoke("Shoot");
     }
 
     void Update()
@@ -109,11 +123,19 @@ public class EnemyController : Entity
         }
     }
 
+    public override void Hit(int damage)
+    {
+        StartCoroutine(HitEffect());
+        base.Hit(damage);
+    }
+    IEnumerator HitEffect()
+    {
+        renderer.materials[0].SetColor("_EmissionColor", Color.red);
+        yield return new WaitForSeconds(0.1f);
+        renderer.materials[0].SetColor("_EmissionColor", Color.black);
+    }
 
     bool loop;
-
-    
-
     IEnumerator Patrol()
     {
         while (true)
@@ -131,27 +153,16 @@ public class EnemyController : Entity
 
     public override void Die()
     {
-        StartCoroutine(Hide());
-    }
+        AppServices.Instance.AudioService.PlaySound(SoundEffects.Explosion);
+        var ex = AppServices.Instance.PoolManager.GetPooledPrefab(PooledPrefabs.Explsion);
+        ex.transform.position = transform.position;
 
-    IEnumerator Hide()
-    {
+        explosionCallBack.Delay = explosionDuration;
+        explosionCallBack.CallBack = () => { AppServices.Instance.PoolManager.DeactivatePrefab(ex); };
+        AppServices.Instance.StaticCoroutines.Invoke(explosionCallBack);
 
-        foreach (var r in GetComponentsInChildren<Renderer>())
-            r.enabled = false;
-
-        foreach (var r in dieEffects.GetComponentsInChildren<Renderer>())
-            r.enabled = true;
-
-        dieEffects.SetActive(true);
-
-        yield return new WaitForSeconds(2);
-
-        dieEffects.SetActive(false);
-         
-        foreach (var r in GetComponentsInChildren<Renderer>())
-            r.enabled = true;
-
+        
+        GameServices.Instance.ChallengeManager.DeactivateEntity(gameObject);
         SetDefaultHP(defaultHP);
     }
 
@@ -160,7 +171,7 @@ public class EnemyController : Entity
         if (disable)
             return;
 
-        Services.Instance.AudioService.PlaySound(SoundEffects.Machinegun);
+        AppServices.Instance.AudioService.PlaySound(SoundEffects.Machinegun);
 
         foreach (var t in Towers)
         {
@@ -176,7 +187,7 @@ public class EnemyController : Entity
                     GameObject go;
                     if (optimize)
                     {
-                        go = Services.Instance.PoolManager.GetPooledPrefab(PooledPrefabs.Bullet);
+                        go = AppServices.Instance.PoolManager.GetPooledPrefab(PooledPrefabs.Bullet);
                         go.transform.position = p.position;
                         go.transform.rotation = p.rotation;
                         foreach (var x in go.GetComponentsInChildren<TrailRenderer>())

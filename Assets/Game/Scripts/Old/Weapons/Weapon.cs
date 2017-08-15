@@ -65,9 +65,6 @@ public class Weapon : MonoBehaviour
 
     public void CreateProjectile(WeaponFireMod currFireMod)
     {
-        Start();
-
-        print(Data.Graphics.name);
         foreach (var fireSpot in currFireMod.FireSpots)
         {
             var t = fireSpot.Spot;

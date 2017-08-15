@@ -2,16 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Mover : MonoBehaviour {
-
-
+public class Mover : MonoBehaviour
+{
     [SerializeField] float speed;
-    [SerializeField] bool local;
-
-	// Use this for initialization
-	void Start () {
-		
-	}
+    [SerializeField] bool local;    
 	
 	// Update is called once per frame
 	void FixedUpdate () {

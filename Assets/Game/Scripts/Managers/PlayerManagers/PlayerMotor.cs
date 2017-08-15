@@ -89,6 +89,16 @@ public class PlayerMotor
         if(!Disabled)
         {
             transform.localPosition += motion;
+
+            transform.localPosition = new Vector3(
+                Mathf.Clamp(transform.localPosition.x,
+                    -45.9f,
+                    91.1f),
+                Mathf.Clamp(transform.localPosition.y,
+                    -5f,
+                    64.50f),
+                transform.localPosition.z);
+
             targetedTilt = tilt;
         }
     }

@@ -153,7 +153,7 @@ public class EnemyController : Entity
 
     public override void Die()
     {
-        AppServices.Instance.AudioService.PlaySound(SoundEffects.Explosion);
+        AppServices.Instance.AudioManager.SoundEffectsManager.PlaySound(SoundEffects.Explosion);
         var ex = AppServices.Instance.PoolManager.GetPooledPrefab(PooledPrefabs.Explsion);
         ex.transform.position = transform.position;
 
@@ -171,7 +171,7 @@ public class EnemyController : Entity
         if (disable)
             return;
 
-        AppServices.Instance.AudioService.PlaySound(SoundEffects.Machinegun);
+        AppServices.Instance.AudioManager.SoundEffectsManager.PlaySound(SoundEffects.Machinegun);
 
         foreach (var t in Towers)
         {

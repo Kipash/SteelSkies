@@ -1,4 +1,4 @@
-2017.1.0f3:3.1.0.0
+2017.1.0f3:3.3.0.0
 WebGL
 L:/Apps/Unity2017.1_64/Editor/Data/Managed/UnityEditor.dll
 L:/Apps/Unity2017.1_64/Editor/Data/Managed/UnityEngine.dll

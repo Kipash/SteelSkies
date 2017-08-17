@@ -77,7 +77,7 @@ public class Projectile : MonoBehaviour
 
     void CreateExplosion(Collider2D original)
     {
-        AppServices.Instance.AudioService.PlaySound(SoundEffects.Explosion);
+        AppServices.Instance.AudioManager.SoundEffectsManager.PlaySound(SoundEffects.Explosion);
 
         var g = AppServices.Instance.PoolManager.GetPooledPrefab(explosion.Prefab);
         g.transform.position = transform.position;

@@ -13,15 +13,11 @@ public class AppServices : MonoBehaviour
     [Header(" - StaticCoroutines - ")]
     public StaticCoroutines StaticCoroutines;
 
-    [Header(" - MusicManager - ")]
-    public MusicManager MusicManager;
-
-    [Header(" - AudioService - ")]
-    public AudioService AudioService;
-
     [Header(" - AppInput - ")]
     public AppInput AppInput = new AppInput();
 
+    [Header(" - AudioManager - ")]
+    public AudioManager AudioManager;
 
     [Header(" - PoolManager - ")]
     public PrefabPoolManager PoolManager;
@@ -38,9 +34,7 @@ public class AppServices : MonoBehaviour
         
         PoolManager.Start();
 
-        AudioService.Start();
-
-        MusicManager.IsPaused = false;
+        AudioManager.Start();
 
         AppManager.Instance.OnLoadLevel += StaticCoroutines.StopAllCoroutines;
 

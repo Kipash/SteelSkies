@@ -106,7 +106,7 @@ public class ChallengeManager
     IEnumerator<float> SpawnWave(WaveInfo info)
     {
         yield return Timing.WaitForSeconds(info.PreWarm);
-        AppServices.Instance.AudioService.PlaySound(SoundEffects.Warning);
+        AppServices.Instance.AudioManager.SoundEffectsManager.PlaySound(SoundEffects.Warning);
 
         for (int i = 0; i < info.Wave.Count; i++)
         {

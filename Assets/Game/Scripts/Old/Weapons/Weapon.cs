@@ -87,7 +87,7 @@ public class Weapon : MonoBehaviour
 
     public void Shoot(float shootTime)
     {
-        AppServices.Instance.AudioService.PlaySound(SoundEffects.Machinegun);
+        AppServices.Instance.AudioManager.SoundEffectsManager.PlaySound(SoundEffects.Machinegun);
 
         WeaponFireMod fMode = GetFireMod(shootTime);
         if (fMode != null)

@@ -3,31 +3,22 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-
-[Serializable]
-public class SoundEffect
-{
-    public string Name;
-    public AudioClip Clip;
-    public SoundEffects Type; 
-}
+using UnityEngine.Audio;
 
 [Serializable]
 public class AudioService
 {
     [SerializeField] GameObject AudioSourceRoot;
-    [SerializeField] SoundEffect[] clips;
+    
     [SerializeField] float preBuildSources;
     [SerializeField] AnimationCurve volumeRollOff;
 
-    Dictionary<SoundEffects, SoundEffect> effects = new Dictionary<SoundEffects, SoundEffect>();
+    
     List<AudioSource> allSources = new List<AudioSource>();
     List<AudioSource> availableSources = new List<AudioSource>();
 
     public void Start()
     {
-        effects = clips.GroupBy(x => x.Type).ToDictionary(x => x.Key, x => x.First());
-
         for (int i = 0; i < preBuildSources; i++)
         {
             var s = AddSource();
@@ -37,30 +28,24 @@ public class AudioService
         availableSources = allSources.ToList();
     }
 
-    public void PlaySound(SoundEffects sound)
-    {
-
-        if (!effects.ContainsKey(sound))
-        {
-            Debug.LogErrorFormat("Sound {0} isnt registered, but still trying to be played!", sound);
-            return;
-        }
-
-        Play(effects[sound].Clip);
-    }
-
     public AudioSource GetPermanentSource()
     {
         return GetSource();
     }
 
+    public void Play(Sound sound)
+    {
+        Play(sound.Group, sound.Clip, sound.Volume);
+    }
 
-    void Play(AudioClip clip)
+    public void Play(AudioMixerGroup group, AudioClip clip, float volume)
     {
         var s = GetSource();
 
+        s.outputAudioMixerGroup = group;
         s.clip = clip;
         s.Play();
+        s.volume = volume;
 
         var deactivateSource = new DelayedCall();
 
@@ -73,6 +58,8 @@ public class AudioService
     {
         s.enabled = false;
         s.clip = null;
+        s.volume = 1;
+        s.outputAudioMixerGroup = null;
         availableSources.Add(s);
     }
 

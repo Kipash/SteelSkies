@@ -129,7 +129,8 @@ public class PlayerComponent : Entity
 
     void UnRegisterCallbacks()
     {
-        AppServices.Instance.AppInput.RemoveBind(typeof(PlayerComponent));
+        if(AppServices.Instance != null)
+            AppServices.Instance.AppInput.RemoveBind(typeof(PlayerComponent));
     }
 
     public override void Die()

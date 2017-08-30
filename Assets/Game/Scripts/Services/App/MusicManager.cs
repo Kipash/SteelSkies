@@ -28,6 +28,11 @@ public class MusicManager
 
     DelayedCall callBack;
 
+    public void Reset()
+    {
+        clips.Shuffle();     
+    }
+
     bool isPaused;
     public bool IsPaused
     {

@@ -14,6 +14,9 @@ public class GameServices : MonoBehaviour
     [Header(" - GameManager - ")]
     public GameManager GameManager;
 
+    [Header(" - WayPointManager - ")]
+    public WayPointManager WayPointManager;
+
     [Header("Temp")]
     [SerializeField] Text scoreText;
 
@@ -24,6 +27,7 @@ public class GameServices : MonoBehaviour
         Instance = this;
 
         ChallengeManager.Start();
+        WayPointManager.Start();
 
         var diff = (DateTime.Now - t);
         Debug.LogFormat("All Game services loaded in {0} ms ({1} tics)", diff.TotalMilliseconds, diff.Ticks);

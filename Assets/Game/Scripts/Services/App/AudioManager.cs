@@ -24,6 +24,7 @@ public class AudioManager
         WeatherSFXManager.Start();
 
         WeatherSFXManager.CurrentWeather = WeatherType.Rain;
+        MusicManager.Reset();
         MusicManager.IsPaused = false;
     }
 }

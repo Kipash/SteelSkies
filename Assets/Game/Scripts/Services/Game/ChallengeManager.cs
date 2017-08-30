@@ -33,6 +33,9 @@ public class ChallengeManager
     [Header("Wawe")]
     [SerializeField] List<WaveInfo> waves;
 
+    [Header("Debug")]
+    [SerializeField] bool disabled;
+
     List<GameObject> currentGameObjects = new List<GameObject>();
 
     bool isSpawningWave;
@@ -77,6 +80,8 @@ public class ChallengeManager
     
     void SpawnEnemy(OpponentInfo info)
     {
+        if (disabled)
+            return;
         var pref = AppServices.Instance.PoolManager.GetPooledPrefab(info.Prefab);
 
         if (info.Location == LocationType.Relative)

@@ -10,8 +10,8 @@ public class AppServices : MonoBehaviour
     public static AppServices Instance;
 
 
-    [Header(" - StaticCoroutines - ")]
-    public StaticCoroutines StaticCoroutines;
+    //[Header(" - StaticCoroutines - ")]
+    //public StaticCoroutines StaticCoroutines;
 
     [Header(" - AppInput - ")]
     public AppInput AppInput = new AppInput();
@@ -36,7 +36,7 @@ public class AppServices : MonoBehaviour
 
         AudioManager.Start();
 
-        AppManager.Instance.OnLoadLevel += StaticCoroutines.StopAllCoroutines;
+        //AppManager.Instance.OnLoadLevel += StaticCoroutines.StopAllCoroutines;
 
         var diff = (DateTime.Now - t);
         Debug.LogFormat("All App services loaded in {0} ms ({1} tics)", diff.TotalMilliseconds, diff.Ticks);
@@ -45,5 +45,10 @@ public class AppServices : MonoBehaviour
     private void Update()
     {
         AppInput.CheckInput();
+
+        if(Input.GetKeyDown(KeyCode.F1))
+        {
+            PoolManager.Reset();
+        }
     }
 }

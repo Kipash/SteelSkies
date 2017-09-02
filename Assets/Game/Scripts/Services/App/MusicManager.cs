@@ -2,6 +2,8 @@
 using System.Collections;
 using System;
 using UnityEngine.Audio;
+using MovementEffects;
+using System.Collections.Generic;
 
 [Serializable]
 public class MusicManager
@@ -21,12 +23,12 @@ public class MusicManager
     }
     [SerializeField] AudioMixerGroup group;
     [SerializeField] AudioClip[] clips;
-    
+
+    string musicTag = "MusicTag";
 
     AudioClip nextClip;
     int currClipIndex;
-
-    DelayedCall callBack;
+    float currentDelay;
 
     public void Reset()
     {
@@ -55,27 +57,30 @@ public class MusicManager
         if (audioSource.isPlaying)
         {
             audioSource.Pause();
-            AppServices.Instance.StaticCoroutines.CancelInvoke(callBack);
+            Timing.KillCoroutines(musicTag);
         }
         else
             Debug.LogWarning("No music is playing, cant be stoped!");
     }
     void StartMusic()
     {
+        Timing.Instance.AddTag(musicTag, true);
         if (audioSource.clip != null)
         {
             if (!audioSource.isPlaying)
             {
                 audioSource.UnPause();
-                callBack.Delay = audioSource.clip.length - audioSource.time;
-                AppServices.Instance.StaticCoroutines.Invoke(callBack);
+                currentDelay = (audioSource.clip.length) - audioSource.time;
+                Timing.RunCoroutine(NextTrack(), musicTag);
             }
         }
         else
-            NextTrack();
+            Timing.RunCoroutine(NextTrack(), musicTag);
     }
-    void NextTrack()
+    IEnumerator<float> NextTrack()
     {
+        yield return Timing.WaitForSeconds(currentDelay);
+
         if (clips.Length != 0)
         {
             audioSource.clip = (nextClip == null ? clips[0] : clips[currClipIndex]);
@@ -85,12 +90,14 @@ public class MusicManager
             if (currClipIndex >= clips.Length)
                 currClipIndex = 0;
             nextClip = clips[currClipIndex];
+            
+            float pitch;
+            if (group.audioMixer.GetFloat("MusicPitch", out pitch))
+                currentDelay = (audioSource.clip.length / pitch) - audioSource.time;
+            else
+                currentDelay = audioSource.clip.length - audioSource.time;
 
-            if (callBack == null)
-                callBack = new DelayedCall() { CallBack = NextTrack };
-
-            callBack.Delay = audioSource.clip.length - audioSource.time;
-            AppServices.Instance.StaticCoroutines.Invoke(callBack);
+            Timing.RunCoroutine(NextTrack(), musicTag);
         }
     }
 }

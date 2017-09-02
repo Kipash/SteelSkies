@@ -1,4 +1,6 @@
-﻿using System;
+﻿/*
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -24,9 +26,11 @@ public class StaticCoroutines : MonoBehaviour
     }
 }
 
+
 public class DelayedCall
 {
     public Action CallBack;
     public float Delay;
     public bool Canceled;
 }
+*/

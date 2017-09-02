@@ -14,7 +14,6 @@ public class Projectile : MonoBehaviour
     [SerializeField] GameObject Gfx;
 
     [SerializeField] Explosion explosion;
-    DelayedCall explosionCallBack = new DelayedCall();
 
     float speed;
     RaycastHit2D[] hits;
@@ -79,7 +78,7 @@ public class Projectile : MonoBehaviour
     {
         AppServices.Instance.AudioManager.SoundEffectsManager.PlaySound(SoundEffects.Explosion);
 
-        var g = AppServices.Instance.PoolManager.GetPooledPrefab(explosion.Prefab);
+        var g = AppServices.Instance.PoolManager.GetPooledPrefabTimed(explosion.Prefab, explosion.Duration);
         g.transform.position = transform.position;
         g.transform.position = transform.position;
 
@@ -107,10 +106,6 @@ public class Projectile : MonoBehaviour
                 Debug.LogError(hit.collider.gameObject.name + " should have a IHitteble in it's hierarchy!");
             }
         }
-
-        explosionCallBack.Delay = explosion.Duration;
-        explosionCallBack.CallBack = () => { AppServices.Instance.PoolManager.DeactivatePrefab(g); };
-        AppServices.Instance.StaticCoroutines.Invoke(explosionCallBack); 
     }
 
     void Destroy()

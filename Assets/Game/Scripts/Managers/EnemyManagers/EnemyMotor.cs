@@ -32,7 +32,8 @@ public class EnemyMotor
 
     public void Start()
     {
-        path = GameServices.Instance.WayPointManager.Paths[pathType].Points;
+        if(GameServices.Instance != null)
+            path = GameServices.Instance.WayPointManager.Paths[pathType].Points;
         posLastFrame = transform.position;
     }
 

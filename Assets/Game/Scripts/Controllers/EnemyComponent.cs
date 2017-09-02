@@ -19,14 +19,12 @@ public class EnemyComponent : Entity
     {
         motor.Update();
     }
-    public override void Hit(int damage)
-    {
-        print("hit");
-        base.Hit(damage);
-    }
     public override void Die()
     {
         AppServices.Instance.AudioManager.SoundEffectsManager.PlaySound(SoundEffects.Explosion);
+
+        var explosion = AppServices.Instance.PoolManager.GetPooledPrefabTimed(PooledPrefabs.SmallExplsion, 3);
+        explosion.transform.position = transform.position;
 
         GameServices.Instance.ChallengeManager.DeactivateEntity(gameObject);
         SetDefaultHP(defaultHP);

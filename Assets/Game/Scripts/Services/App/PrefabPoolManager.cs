@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using MovementEffects;
 
 [Serializable]
 public class PooledPrefab
@@ -22,15 +23,28 @@ public class PrefabPoolManager
     [Space(20)]
     [SerializeField] Transform prefabRepository;
 
+    string poolTag = "PoolTag";
     Dictionary<PooledPrefabs, PooledPrefab> prefabs = new Dictionary<global::PooledPrefabs, PooledPrefab>();
 
     public void Start()
     {
-        PreBuild();
-
+        Timing.Instance.AddTag(poolTag, true);
         prefabs = pooledPrefabs.GroupBy(x => x.Type).ToDictionary((x => x.Key), (x => x.First()));
-
         AppManager.Instance.OnLoadLevel += ForceDisable;
+
+        PreBuild();
+    }
+
+    public void Reset()
+    {
+        var x = prefabs[PooledPrefabs.Bullet];
+        Debug.Log(x.AllObjects.Where(y => x.AllObjects.Where((z) => z == y).Count() > 1 ).Count());
+        Debug.Log(x.AvailableObjects.Where(y => x.AvailableObjects.Where((z) => z == y).Count() > 1).Count());
+
+        x.AllObjects = x.AllObjects.Distinct().ToList();
+        x.AvailableObjects = x.AvailableObjects.Distinct().ToList();
+        Debug.Log(x.AllObjects.Where(y => x.AllObjects.Where((z) => z == y).Count() > 1).Count());
+        Debug.Log(x.AvailableObjects.Where(y => x.AvailableObjects.Where((z) => z == y).Count() > 1).Count());
     }
 
     void PreBuild()
@@ -39,11 +53,9 @@ public class PrefabPoolManager
         {
             for (int i = 0; i < p.PreBuild; i++)
             {
-                var g = MonoBehaviour.Instantiate(p.Prefab);
-                p.AllObjects.Add(g);
+                var g = AddNew(p.Type);
                 SetParent(g, p);
             }
-            p.AvailableObjects = p.AllObjects.ToList();
         }
     }
 
@@ -56,13 +68,23 @@ public class PrefabPoolManager
 
         GameObject g;
         if (pPref.AvailableObjects.Count == 0)
+        {
             g = AddNew(prefab);
+        }
         else
+        {
             g = pPref.AvailableObjects.First();
+        }
         pPref.AvailableObjects.Remove(g);
         g.SetActive(true);
         g.transform.parent = null;
 
+        return g;
+    }
+    public GameObject GetPooledPrefabTimed(PooledPrefabs prefab, float t)
+    {
+        var g = GetPooledPrefab(prefab);
+        Timing.Instance.CallDelayedOnInstance(t, () => { DeactivatePrefab(g); });
         return g;
     }
     public bool DeactivatePrefab(GameObject prefab)
@@ -73,7 +95,9 @@ public class PrefabPoolManager
             var pPrefab = pPrefabs[0];
         
             SetParent(prefab, pPrefab);
-            pPrefab.AvailableObjects.Add(prefab);
+            if(!pPrefab.AvailableObjects.Contains(prefab))
+                pPrefab.AvailableObjects.Add(prefab);
+
             return true;
         }
         else
@@ -91,7 +115,7 @@ public class PrefabPoolManager
     GameObject AddNew(PooledPrefabs type)
     {
         var p = prefabs[type];
-        var g = MonoBehaviour.Instantiate(p.Prefab);
+        var g = UnityEngine.Object.Instantiate(p.Prefab);
         p.AllObjects.Add(g);
         p.AvailableObjects.Add(g);
         return g;
@@ -113,7 +137,7 @@ public class PrefabPoolManager
     {
         foreach(var prefs in prefabs.Values)
         {
-            foreach(var o in prefs.AllObjects)
+            foreach(var o in prefs.AllObjects.Except(prefs.AvailableObjects))
             {
                 DeactivatePrefab(o);
             }

@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.Audio;
+using MovementEffects;
 
 [Serializable]
 public class AudioService
@@ -47,11 +48,8 @@ public class AudioService
         s.Play();
         s.volume = volume;
 
-        var deactivateSource = new DelayedCall();
 
-        deactivateSource.Delay = clip.length;
-        deactivateSource.CallBack = () => { DeactivateSource(s); };
-        AppServices.Instance.StaticCoroutines.Invoke(deactivateSource);
+        Timing.Instance.CallDelayedOnInstance(clip.length, () => { DeactivateSource(s); });
     }
 
     void DeactivateSource(AudioSource s)

@@ -1,7 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
+using System.Linq;
 using UnityEngine.UI;
+using MovementEffects;
+using System.Collections.Generic;
 
 [Serializable]
 public class PlayerEffects
@@ -14,8 +17,9 @@ public class PlayerEffects
     [SerializeField] float flashDuration;
 
     [SerializeField] float minDif;
-
-    DelayedCall flashCall = new DelayedCall();
+    
+    string flashTag = "PlayerFlash"; //TODO: Random ?
+    float currentDelay;
 
     PerlinShake perlinShake;
 
@@ -26,36 +30,51 @@ public class PlayerEffects
 
     public void Start()
     {
+        Timing.Instance.AddTag(flashTag, false);
+
+        AppManager.Instance.OnLoadLevel += Effects_OnLoadLevel;
+        
         perlinShake = Camera.main.GetComponent<PerlinShake>();
+    }
+
+    private void Effects_OnLoadLevel()
+    {
+        perlinShake.StopAllCoroutines();
+
+        AppManager.Instance.OnLoadLevel -= Effects_OnLoadLevel;
     }
 
     public void Update()
     {
         if (isFlashing && !isFlashingLastFrame)
-            Flash(false);
+            Timing.Instance.RunCoroutineOnInstance(Flash(false), flashTag);
         else if (!isFlashing && isFlashingLastFrame)
-            flashCall.Canceled = true;
+            Timing.Instance.KillCoroutinesOnInstance(flashTag);
 
         isFlashingLastFrame = isFlashing;
 
     }
 
-    void Flash(bool b)
+    IEnumerator<float> Flash(bool b)
     {
-        Flash(b, chargedColor);
+        Timing.Instance.RunCoroutineOnInstance(Flash(b, chargedColor), flashTag);
+        yield return Timing.WaitForOneFrame;
     }
-    void Flash(bool b, Color col)
+    IEnumerator<float> Flash(bool b, Color col)
     {
+        yield return Timing.WaitForSeconds(currentDelay);
+
+        Debug.Log("Flash");
+        
+
         isFlashing = true;
         if (b)
             SetColor(col);
         else
             SetColor(Color.black);
-        
-        flashCall.CallBack = () => { Flash(!b); };
-        flashCall.Delay = flashDuration;
-        flashCall.Canceled = false;
-        AppServices.Instance.StaticCoroutines.Invoke(flashCall);
+
+        currentDelay = flashDuration;
+        Timing.Instance.RunCoroutineOnInstance(Flash(!b), flashTag);
     }
     void SetColor(Color col)
     {

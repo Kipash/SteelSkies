@@ -73,8 +73,6 @@ public class EnemyController : Entity
     [Header("Explosion")]
     [SerializeField] Explosion explosion;
 
-    DelayedCall explosionCallBack = new DelayedCall();
-
     private void OnEnable()
     {
         renderer.materials[0].SetColor("_EmissionColor", Color.black);
@@ -154,16 +152,12 @@ public class EnemyController : Entity
     public override void Die()
     {
         AppServices.Instance.AudioManager.SoundEffectsManager.PlaySound(SoundEffects.Explosion);
-        var ex = AppServices.Instance.PoolManager.GetPooledPrefab(PooledPrefabs.Explsion);
+        var ex = AppServices.Instance.PoolManager.GetPooledPrefabTimed(PooledPrefabs.Explosion, explosionDuration);
         ex.transform.position = transform.position;
-
-        explosionCallBack.Delay = explosionDuration;
-        explosionCallBack.CallBack = () => { AppServices.Instance.PoolManager.DeactivatePrefab(ex); };
-        AppServices.Instance.StaticCoroutines.Invoke(explosionCallBack);
-
         
         GameServices.Instance.ChallengeManager.DeactivateEntity(gameObject);
         SetDefaultHP(defaultHP);
+        StopAllCoroutines();
     }
 
     void Shoot()

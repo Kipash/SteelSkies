@@ -11,7 +11,9 @@ public class AppManager : MonoBehaviour
     public event Action OnLoadLevel;
 
     void Awake()
-    { 
+    {
+        Debug.ClearDeveloperConsole();
+
         if (Instance != null && Instance != this)
             Destroy(gameObject);
         else
@@ -36,7 +38,7 @@ public class AppManager : MonoBehaviour
 
     void ResetCoroutine_OnLoadLevel()
     {
-        Timing.KillCoroutines();
+        Timing.Instance.KillCoroutines(false);
     }
 
     public void LoadLevel(int index)

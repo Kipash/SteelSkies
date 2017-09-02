@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 
 #if UNITY_5_5_OR_NEWER
 using UnityEngine.Profiling;
@@ -354,7 +355,11 @@ namespace MovementEffects
             }
 
             if (_exceptions.Count > 0)
-                 throw _exceptions.Dequeue();
+            {
+                var ex = _exceptions.Dequeue();
+                Debug.LogErrorFormat("---- Timing exception ----\n{0}\n----\n{1}\n----", ex.StackTrace, ex.Message);
+                return;
+            }
         }
 
         void FixedUpdate()
@@ -1176,6 +1181,18 @@ namespace MovementEffects
             return numberFound;
         }
 
+        //Kip's Code
+        public void KillCoroutines(bool crossScene)
+        {
+            if (!crossScene)
+            {
+                //foreach (var x in Tags.Where(x => !x.CrossScene))
+                //    KillCoroutines(x.Tag);
+            }
+            else
+                KillCoroutines();
+        }
+
         /// <summary>
         /// This will pause all coroutines running on the current MEC instance until ResumeCoroutines is called.
         /// </summary>
@@ -1918,6 +1935,12 @@ namespace MovementEffects
             return action == null ? new CoroutineHandle() : RunCoroutineOnInstance(_DelayedCall(delay, action));
         }
 
+        //Kip's code
+        public CoroutineHandle CallDelayedOnInstance(float delay, System.Action action, string tag)
+        {
+            return action == null ? new CoroutineHandle() : RunCoroutineOnInstance(_DelayedCall(delay, action), tag);
+        }
+
         private IEnumerator<float> _DelayedCall(float delay, System.Action action)
         {
             yield return WaitForSecondsOnInstance(delay);
@@ -2296,6 +2319,15 @@ namespace MovementEffects
 
         [System.Obsolete("Just.. no.", true)]
         public new static void print(object message) { }
+
+
+        //Kip's code
+        [HideInInspector] public List<TimingTag> Tags = new List<TimingTag>();
+        public void AddTag(string tag, bool crossScene)
+        {
+            if (!Tags.Any(x => x.Tag == tag))
+                Tags.Add(new TimingTag() { CrossScene = crossScene, Tag = tag });
+        }
     }
 
     public enum Segment

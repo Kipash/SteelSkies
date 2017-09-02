@@ -18,7 +18,7 @@ public class GameManager
 
     IEnumerator<float> ResetLevelDelayed(float delay)
     {
-        yield return Timing.WaitForSeconds(delay);
+        yield return Timing.WaitForSeconds(delay);  
         AppManager.Instance.LoadLevel(Application.loadedLevel);
     }
 }

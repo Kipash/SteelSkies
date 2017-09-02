@@ -120,8 +120,6 @@ public class ChallengeManager
                 isSpawningWave = false;
             else
                 yield return Timing.WaitForSeconds(info.Wave[i].SpawnDelay);
-
-
         }
     }
 }

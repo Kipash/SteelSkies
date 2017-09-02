@@ -7,6 +7,8 @@ using MovementEffects;
 [Serializable]
 public class GameManager
 {
+    public GameObject Player;
+
     public void ResetLevel(float delay)
     {
         Timing.RunCoroutine(ResetLevelDelayed(delay));
@@ -18,7 +20,8 @@ public class GameManager
 
     IEnumerator<float> ResetLevelDelayed(float delay)
     {
-        yield return Timing.WaitForSeconds(delay);  
+        yield return Timing.WaitForSeconds(delay);
+        GameServices.IsMainManagerPresent = false;
         AppManager.Instance.LoadLevel(Application.loadedLevel);
     }
 }

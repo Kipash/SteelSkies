@@ -85,7 +85,7 @@ public class Projectile : MonoBehaviour
         hits = Physics2D.CircleCastAll(transform.position, explosion.Radius, Vector2.zero, 0, explosion.Mask);
         foreach(var hit in hits)
         {
-            if (hit.collider == original)
+            if (hit.collider == original || !hit.collider.gameObject.CompareTag(TargetTag))
                 continue;
 
             var c1 = hit.collider.GetComponentInChildren<Entity>();

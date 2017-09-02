@@ -64,9 +64,6 @@ public class PlayerEffects
     {
         yield return Timing.WaitForSeconds(currentDelay);
 
-        Debug.Log("Flash");
-        
-
         isFlashing = true;
         if (b)
             SetColor(col);

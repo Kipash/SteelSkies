@@ -9,7 +9,7 @@ public class WayPointManager
 {
     [SerializeField] Rail[] paths;
 
-    public Dictionary<PathType, Rail> Paths { get; private set; } = new Dictionary<PathType, Rail>();
+    public Dictionary<Paths, Rail> Paths { get; private set; } = new Dictionary<Paths, Rail>();
 
     public void Start()
     {

@@ -6,6 +6,6 @@ using System.Collections;
 public class Rail
 {
     public string Name;
-    public PathType Type;
+    public Paths Type;
     public Transform[] Points;
 }

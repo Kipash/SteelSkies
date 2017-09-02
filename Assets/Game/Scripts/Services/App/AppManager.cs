@@ -1,8 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
-using System.IO;
 using System;
-using System.Linq;
 using MovementEffects;
 
 public class AppManager : MonoBehaviour
@@ -12,8 +9,6 @@ public class AppManager : MonoBehaviour
 
     void Awake()
     {
-        Debug.ClearDeveloperConsole();
-
         if (Instance != null && Instance != this)
             Destroy(gameObject);
         else

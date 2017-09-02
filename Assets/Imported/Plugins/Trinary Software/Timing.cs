@@ -1956,9 +1956,9 @@ namespace MovementEffects
         /// <param name="action">The action to call every frame.</param>
         /// <param name="onDone">An optional action to call when this function finishes.</param>
         /// <returns>The handle to the coroutine that is started by this function.</returns>
-        public static CoroutineHandle CallPeriodically(float timeframe, float period, System.Action action, System.Action onDone = null)
+        public static CoroutineHandle CallPeriodically(float timeframe, float period, System.Action action, string tag, System.Action onDone = null)
         {
-            return action == null ? new CoroutineHandle() : RunCoroutine(Instance._CallContinuously(timeframe, period, action, onDone), Segment.Update);
+            return action == null ? new CoroutineHandle() : RunCoroutine(Instance._CallContinuously(timeframe, period, action, onDone), Segment.Update, tag);
         }
 
         /// <summary>

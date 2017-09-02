@@ -12,6 +12,7 @@ public class OpponentInfo
     public string Name;
     public LocationType Location;
     public PooledPrefabs Prefab;
+    public PathSettings PathSettings;
     public Vector3 Offset;
     public float SpawnDelay;
 }
@@ -40,11 +41,15 @@ public class ChallengeManager
 
     bool isSpawningWave;
 
+    public const string SpawningTag = "SpawningTag";
+
     public int Score;
     public int BestScore;
 
     public void Start()
     {
+        Timing.Instance.AddTag(SpawningTag, false);
+
         ScanOponents();
 
         var score = PlayerPrefs.GetInt("score", -1);
@@ -75,7 +80,7 @@ public class ChallengeManager
             PlayerPrefs.SetInt("score", Score);
         }
         else
-            UnityEngine.Object.Destroy(go);
+            Debug.LogErrorFormat("Game object '{0}' is not listed!", go.name);
     }
     
     void SpawnEnemy(OpponentInfo info)
@@ -95,6 +100,9 @@ public class ChallengeManager
             pref.transform.localPosition = relativeRoot.position + info.Offset;
         }
 
+        var enemy = pref.GetComponentInChildren<EnemyComponent>();
+        enemy.PathSettings = info.PathSettings;
+        
         currentGameObjects.Add(pref);
     }
 
@@ -105,7 +113,7 @@ public class ChallengeManager
             isSpawningWave = true;
 
             var wave = waves[UnityEngine.Random.Range(0, waves.Count)];
-            Timing.RunCoroutine(SpawnWave(wave));
+            Timing.RunCoroutine(SpawnWave(wave), SpawningTag);
         }
     }
     IEnumerator<float> SpawnWave(WaveInfo info)
@@ -113,9 +121,12 @@ public class ChallengeManager
         yield return Timing.WaitForSeconds(info.PreWarm);
         AppServices.Instance.AudioManager.SoundEffectsManager.PlaySound(SoundEffects.Warning);
 
-        for (int i = 0; i < info.Wave.Count; i++)
+        var max = info.Wave.Count;
+        
+        for (int i = 0; i < max; i++)
         {
             SpawnEnemy(info.Wave[i]);
+
             if (i + 1 == info.Wave.Count)
                 isSpawningWave = false;
             else

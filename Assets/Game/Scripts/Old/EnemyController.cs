@@ -4,49 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 
-[Serializable]
-public class Tower
-{
-    [Header("Range")]
-    public float MaxAngle;
-    public float MinAngle;
-
-    [Header("Movement")]
-    public float barrelSpeed;
-    public float TowerSpeed;
-
-    [Header("Tower")]
-    public Transform TowerOrigin;
-
-    [Header("Barrels")]
-    public Transform BarrelOrigin;
-    public Barrel[] Barrels;
-}
-
-[Serializable]
-public class Barrel
-{
-    [Header("SpawnSpots")]
-    public Transform SpawnSpot;
-
-    [Header("Effects")]
-    public ParticleEffect[] Effects;
-}
-[SerializeField]
-public class Barrels
-{
-    public Barrel[] InnerBarrels;
-}
-
-
-[Serializable]
-public class ParticleEffect
-{
-    public ParticleSystem Particle;
-    public int Amount;
-
-}
-
 public class EnemyController : Entity
 {
     [Header("AI")]
@@ -123,15 +80,10 @@ public class EnemyController : Entity
 
     public override void Hit(int damage)
     {
-        StartCoroutine(HitEffect());
+        //StartCoroutine(HitEffect());
         base.Hit(damage);
     }
-    IEnumerator HitEffect()
-    {
-        renderer.materials[0].SetColor("_EmissionColor", Color.red);
-        yield return new WaitForSeconds(0.1f);
-        renderer.materials[0].SetColor("_EmissionColor", Color.black);
-    }
+
 
     bool loop;
     IEnumerator Patrol()

@@ -45,10 +45,5 @@ public class AppServices : MonoBehaviour
     private void Update()
     {
         AppInput.CheckInput();
-
-        if(Input.GetKeyDown(KeyCode.F1))
-        {
-            PoolManager.Reset();
-        }
     }
 }

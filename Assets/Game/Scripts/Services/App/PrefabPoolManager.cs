@@ -35,18 +35,6 @@ public class PrefabPoolManager
         PreBuild();
     }
 
-    public void Reset()
-    {
-        var x = prefabs[PooledPrefabs.Bullet];
-        Debug.Log(x.AllObjects.Where(y => x.AllObjects.Where((z) => z == y).Count() > 1 ).Count());
-        Debug.Log(x.AvailableObjects.Where(y => x.AvailableObjects.Where((z) => z == y).Count() > 1).Count());
-
-        x.AllObjects = x.AllObjects.Distinct().ToList();
-        x.AvailableObjects = x.AvailableObjects.Distinct().ToList();
-        Debug.Log(x.AllObjects.Where(y => x.AllObjects.Where((z) => z == y).Count() > 1).Count());
-        Debug.Log(x.AvailableObjects.Where(y => x.AvailableObjects.Where((z) => z == y).Count() > 1).Count());
-    }
-
     void PreBuild()
     {
         foreach (var p in pooledPrefabs)

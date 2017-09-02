@@ -15,6 +15,7 @@ public class PlayerMotor
 
     [Header("Movement")]
     [SerializeField] Directions playerSpeed;
+    [SerializeField] float maxMotionMagnitude;
 
     [Header("Tilt")]
     [SerializeField] float tiltSpeed;
@@ -88,7 +89,11 @@ public class PlayerMotor
     {
         if(!Disabled)
         {
-            transform.localPosition += motion;
+            var m = motion;
+            if (motion.magnitude > maxMotionMagnitude)
+                m = m.normalized * maxMotionMagnitude;
+                    
+            transform.localPosition += m;
 
             transform.localPosition = new Vector3(
                 Mathf.Clamp(transform.localPosition.x,
@@ -100,6 +105,8 @@ public class PlayerMotor
                 transform.localPosition.z);
 
             targetedTilt = tilt;
+
+               
         }
     }
 

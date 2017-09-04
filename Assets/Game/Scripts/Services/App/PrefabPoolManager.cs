@@ -26,7 +26,7 @@ public class PrefabPoolManager
     string poolTag = "PoolTag";
     Dictionary<PooledPrefabs, PooledPrefab> prefabs = new Dictionary<global::PooledPrefabs, PooledPrefab>();
 
-    public void Start()
+    public void Initialize()
     {
         Timing.Instance.AddTag(poolTag, true);
         prefabs = pooledPrefabs.GroupBy(x => x.Type).ToDictionary((x => x.Key), (x => x.First()));

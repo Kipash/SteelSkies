@@ -39,7 +39,7 @@ public class WeatherSFXManager
         }
     }
 
-    public void Start()
+    public void Initialize()
     {
         soundEffects = clips.GroupBy(x => x.Type).ToDictionary(x => x.Key, x => x.First());
         Timing.CallDelayed(1, () => { Timing.RunCoroutine(PlayRandomSFX()); });

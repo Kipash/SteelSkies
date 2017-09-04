@@ -32,9 +32,9 @@ public class AppServices : MonoBehaviour
         else
             Instance = this;
         
-        PoolManager.Start();
+        PoolManager.Initialize();
 
-        AudioManager.Start();
+        AudioManager.Initialize();
 
         //AppManager.Instance.OnLoadLevel += StaticCoroutines.StopAllCoroutines;
 

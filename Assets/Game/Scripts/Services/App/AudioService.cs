@@ -18,7 +18,7 @@ public class AudioService
     List<AudioSource> allSources = new List<AudioSource>();
     List<AudioSource> availableSources = new List<AudioSource>();
 
-    public void Start()
+    public void Initialize()
     {
         for (int i = 0; i < preBuildSources; i++)
         {

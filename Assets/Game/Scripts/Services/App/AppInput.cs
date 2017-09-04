@@ -17,6 +17,8 @@ namespace App.Player.Services
         List<Call> currInputs = new List<Call>();
 
         public Action<RegisteredKeys[]> OnCallbacksDone;
+        public Action AnyKey;
+        public Action AnyKeyDown;
 
         internal class Call
         {
@@ -52,6 +54,12 @@ namespace App.Player.Services
         }
         public void CheckInput()
         {
+            if (Input.anyKeyDown)
+                AnyKeyDown?.Invoke();
+
+            if (Input.anyKey)
+                AnyKey?.Invoke();
+
             if (keyBinds.Count == 0)
                 return;
 

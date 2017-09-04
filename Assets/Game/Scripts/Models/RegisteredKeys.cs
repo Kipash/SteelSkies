@@ -9,5 +9,5 @@ public enum RegisteredKeys
     MoveDown = 3,
     MoveLeft = 4,
     MoveRight = 5,
-    Pause = 6
+    Pause = 6,
 }

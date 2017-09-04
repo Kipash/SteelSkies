@@ -18,7 +18,9 @@ public class WeaponManager
     Weapon secundary;
 
     public Weapon CurrentWeapon { get; private set; }
-    
+
+    public bool Disabled;
+
     public float GetCurrentWarmUp
     {
         get
@@ -40,18 +42,24 @@ public class WeaponManager
 
     public void PrewarmShot()
     {
-        FireTrashold = Time.time;
+        if (!Disabled)
+        {
+            FireTrashold = Time.time;
+        }
     }
     public void Shoot()
     {
-        CurrentWeapon.Shoot(Time.time - FireTrashold);
-        FireTrashold = -1;
-        if (!CurrentWeapon.Data.HasAmmo)
+        if (!Disabled)
         {
-            if (CurrentWeapon == primary)
-                Debug.LogErrorFormat("primary({0}) weapon has no ammo({1})! It should be set to '-1' - infinite", CurrentWeapon.Data.Name, CurrentWeapon.Data.Ammo);
+            CurrentWeapon.Shoot(Time.time - FireTrashold);
+            FireTrashold = -1;
+            if (!CurrentWeapon.Data.HasAmmo)
+            {
+                if (CurrentWeapon == primary)
+                    Debug.LogErrorFormat("primary({0}) weapon has no ammo({1})! It should be set to '-1' - infinite", CurrentWeapon.Data.Name, CurrentWeapon.Data.Ammo);
 
-            ChangeWeapon(primary);
+                ChangeWeapon(primary);
+            }
         }
     }
     void ChangeWeapon(Weapon wep)
@@ -71,7 +79,10 @@ public class WeaponManager
 
     public void SetSecundary(Weapon wep)
     {
-        secundary = wep;
-        ChangeWeapon(secundary);
+        if (!Disabled)
+        {
+            secundary = wep;
+            ChangeWeapon(secundary);
+        }
     }
 }

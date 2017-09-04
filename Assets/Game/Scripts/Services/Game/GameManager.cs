@@ -7,7 +7,45 @@ using MovementEffects;
 [Serializable]
 public class GameManager
 {
-    public GameObject Player;
+    public PlayerComponent Player;
+
+    public bool IsPlaying { get; private set; }
+
+    public Action OnGameStart;
+    public Action OnGameOver;
+
+    public void Initialize()
+    {
+        OnGameStart += Start;
+        OnGameOver += End;
+
+        AppServices.Instance.AppInput.AnyKeyDown += StartGame;
+
+        End();
+    }
+
+    void Start()
+    {
+        IsPlaying = true;
+        GameServices.Instance.GameUIManager.TitleScreen.SetActive(false);
+    }
+    void End()
+    {
+        IsPlaying = false;
+        GameServices.Instance.GameUIManager.TitleScreen.SetActive(true);
+    }
+
+    public void StartGame()
+    {
+        if(!IsPlaying)
+            OnGameStart?.Invoke();
+    }
+
+    public void GameOver()
+    {
+        if (IsPlaying)
+            OnGameOver?.Invoke();
+    }
 
     public void ResetLevel(float delay)
     {

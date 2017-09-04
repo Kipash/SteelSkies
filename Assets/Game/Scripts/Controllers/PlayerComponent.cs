@@ -13,6 +13,19 @@ public class PlayerComponent : Entity
     [Header("Player")]
     [SerializeField] int defaultHP;
 
+    bool isAlive;
+    public bool IsAlive
+    {
+        get { return isAlive; }
+        set
+        {
+            isAlive = value;
+            motor.Disabled = !value;
+            weaponManager.Disabled = !value;
+            playerEffects.Disabled = !value;
+        }
+    }
+
     private void Start()
     {
         RegisterCallBacks();
@@ -21,16 +34,27 @@ public class PlayerComponent : Entity
         playerEffects.Start();
 
         SetDefaultHP(defaultHP);
+
+        GameServices.Instance.GameManager.OnGameStart += Spawn;
+
+        IsAlive = false;
+        DisablePlayer();
     }
     private void Update()
     {
-        playerEffects.SetTransition(weaponManager.GetCurrentWarmUp);
-        playerEffects.Update();
+        if (IsAlive)
+        {
+            playerEffects.SetTransition(weaponManager.GetCurrentWarmUp);
+            playerEffects.Update();
+        }
     }
 
     private void FixedUpdate()
     {
-        motor.FixedUpdate();
+        if (IsAlive)
+        {
+            motor.FixedUpdate();
+        }
     }
 
     private void OnDestroy()
@@ -133,16 +157,33 @@ public class PlayerComponent : Entity
             AppServices.Instance.AppInput.RemoveBind(typeof(PlayerComponent));
     }
 
+    void Spawn()
+    {
+        IsAlive = true;
+        gameObject.SetActive(true);
+    }
+
     public override void Die()
     {
-        motor.Disabled = true;
-        playerEffects.DieEffect();
-        GameServices.Instance.GameManager.ResetLevel(0.5f);
-        gameObject.SetActive(false);
+        if (IsAlive)
+            DisablePlayer();
     }
+
+    void DisablePlayer()
+    {
+        playerEffects.DieEffect();
+        IsAlive = false;
+        gameObject.SetActive(false);
+
+        GameServices.Instance.GameManager.GameOver();
+    }
+
     public override void Hit(int damage)
     {
-        playerEffects.HitEffect();
-        base.Hit(damage);
+        if (IsAlive)
+        {
+            playerEffects.HitEffect();
+            base.Hit(damage);
+        }
     }
 }

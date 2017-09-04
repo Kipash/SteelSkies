@@ -11,7 +11,7 @@ public class WayPointManager
 
     public Dictionary<Paths, Rail> Paths { get; private set; } = new Dictionary<Paths, Rail>();
 
-    public void Start()
+    public void Initialize()
     {
         Paths = paths.ToDictionary(x => x.Type, x => x);
     }

@@ -46,11 +46,11 @@ public class ChallengeManager
     public int Score;
     public int BestScore;
 
-    public void Start()
+    public void Initialize()
     {
         Timing.Instance.AddTag(SpawningTag, false);
 
-        ScanOponents();
+        GameServices.Instance.GameManager.OnGameStart += ScanOponents;
 
         var score = PlayerPrefs.GetInt("score", -1);
         if (score != -1)

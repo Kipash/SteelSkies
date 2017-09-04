@@ -17,11 +17,11 @@ public class AudioManager
     [Header(" - AudioService - ")]
     public AudioService AudioService;
 
-    public void Start()
+    public void Initialize()
     {
-        SoundEffectsManager.Start();
-        AudioService.Start();
-        WeatherSFXManager.Start();
+        SoundEffectsManager.Initialize();
+        AudioService.Initialize();
+        WeatherSFXManager.Initialize();
 
         WeatherSFXManager.CurrentWeather = WeatherType.Rain;
         MusicManager.Reset();

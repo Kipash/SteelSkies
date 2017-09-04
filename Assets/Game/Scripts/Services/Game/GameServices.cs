@@ -19,6 +19,9 @@ public class GameServices : MonoBehaviour
     [Header(" - WayPointManager - ")]
     public WayPointManager WayPointManager;
 
+    [Header(" - GameUIManager - ")]
+    public GameUIManager GameUIManager;
+
     [Header("Temp")]
     [SerializeField] Text scoreText;
 
@@ -34,8 +37,10 @@ public class GameServices : MonoBehaviour
 
         Instance = this;
 
-        ChallengeManager.Start();
-        WayPointManager.Start();
+        GameManager.Initialize();
+
+        ChallengeManager.Initialize();
+        WayPointManager.Initialize();
 
         var diff = (DateTime.Now - t);
         Debug.LogFormat("All Game services loaded in {0} ms ({1} tics)", diff.TotalMilliseconds, diff.Ticks);
@@ -49,6 +54,6 @@ public class GameServices : MonoBehaviour
 
     private void Update()
     {
-        scoreText.text = string.Format("{0}\nBest:{1}", ChallengeManager.Score, ChallengeManager.BestScore);
+        GameUIManager.GameScore.SetDial(ChallengeManager.Score);
     }
 }

@@ -48,7 +48,7 @@ public class EnemyComponent : Entity
     }
     public override void Die()
     {
-        Debug.Log(motor.OnDisable.GetInvocationList().Length);
+        //Debug.Log(motor.OnDisable.GetInvocationList().Length);
         motor.OnDisable = null;
 
         Timing.KillCoroutines(EnemyEffects.EnemyEffectsTag);

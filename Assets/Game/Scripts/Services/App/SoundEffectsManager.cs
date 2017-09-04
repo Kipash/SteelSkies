@@ -10,7 +10,7 @@ public class SoundEffectsManager
     [SerializeField] SoundEffect[] clips;
     Dictionary<SoundEffects, SoundEffect> effects = new Dictionary<SoundEffects, SoundEffect>();
 
-    public void Start()
+    public void Initialize()
     {
         effects = clips.GroupBy(x => x.Type).ToDictionary(x => x.Key, x => x.First());
     }

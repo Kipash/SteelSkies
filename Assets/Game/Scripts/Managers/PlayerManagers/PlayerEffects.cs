@@ -28,6 +28,8 @@ public class PlayerEffects
 
     EffectMode mode;
 
+    public bool Disabled;
+
     public void Start()
     {
         Timing.Instance.AddTag(flashTag, false);
@@ -46,13 +48,17 @@ public class PlayerEffects
 
     public void Update()
     {
-        if (isFlashing && !isFlashingLastFrame)
-            Timing.Instance.RunCoroutineOnInstance(Flash(false), flashTag);
-        else if (!isFlashing && isFlashingLastFrame)
-            Timing.Instance.KillCoroutinesOnInstance(flashTag);
+        if (!Disabled)
+        {
+            if (isFlashing && !isFlashingLastFrame)
+                Timing.Instance.RunCoroutineOnInstance(Flash(false), flashTag);
+            else if (!isFlashing && isFlashingLastFrame)
+                Timing.Instance.KillCoroutinesOnInstance(flashTag);
 
-        isFlashingLastFrame = isFlashing;
-
+            isFlashingLastFrame = isFlashing;
+        }
+        else
+            SetColor(Color.black);
     }
 
     IEnumerator<float> Flash(bool b)
@@ -81,6 +87,8 @@ public class PlayerEffects
     public void SetTransition(float t)
     {
         #region Gfx
+        if (!Disabled)
+        {
 
             if (!isFlashing)
                 SetColor(Color.Lerp(Color.black, chargedColor, t));
@@ -89,17 +97,25 @@ public class PlayerEffects
             else
                 isFlashing = false;
 
+         
+        }
         #endregion
     }
 
     public void HitEffect()
     {
-        perlinShake.testRotation = true;
-        perlinShake.testRotation = true;
+        if (!Disabled)
+        {
+            perlinShake.testRotation = true;
+            perlinShake.testRotation = true;
+        }
     }
 
     public void DieEffect()
     {
-        perlinShake.testProjection = true;
+        if (!Disabled)
+        {
+            perlinShake.testProjection = true;
+        }
     }
 }

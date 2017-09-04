@@ -13,8 +13,8 @@ public class AudioService
     
     [SerializeField] float preBuildSources;
     [SerializeField] AnimationCurve volumeRollOff;
+    [SerializeField] bool disable;
 
-    
     List<AudioSource> allSources = new List<AudioSource>();
     List<AudioSource> availableSources = new List<AudioSource>();
 
@@ -41,6 +41,9 @@ public class AudioService
 
     public void Play(AudioMixerGroup group, AudioClip clip, float volume)
     {
+        if (disable)
+            return;
+
         var s = GetSource();
 
         s.outputAudioMixerGroup = group;

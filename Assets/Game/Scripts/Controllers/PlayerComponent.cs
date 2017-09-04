@@ -33,13 +33,11 @@ public class PlayerComponent : Entity
         weaponManager.Start();
         playerEffects.Start();
 
-        SetDefaultHP(defaultHP);
+        SetDefaultHP(0);
 
         GameServices.Instance.GameManager.OnGameStart += Spawn;
 
-        IsAlive = false;
         DisablePlayer();
-
         GameServices.Instance.GameUIManager.PlayerHealth.SetImageDial(Health);
     }
     private void Update()
@@ -162,7 +160,9 @@ public class PlayerComponent : Entity
     void Spawn()
     {
         IsAlive = true;
+        SetDefaultHP(defaultHP);
         gameObject.SetActive(true);
+        GameServices.Instance.GameUIManager.PlayerHealth.SetImageDial(Health);
     }
 
     public override void Die()

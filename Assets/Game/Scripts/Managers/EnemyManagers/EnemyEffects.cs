@@ -13,6 +13,8 @@ public class EnemyEffects
     [SerializeField] Color flashColor;
     [SerializeField] float flashDuration = 0.1f;
 
+    [SerializeField] bool disable;
+
     Renderer[] renderers;
 
     public const string EnemyEffectsTag = "EnemyEffectsTag";
@@ -29,11 +31,16 @@ public class EnemyEffects
 
     public void HitEffect()
     {
+        if (disable)
+            return;
         Timing.Instance.RunCoroutineOnInstance(Flash(), EnemyEffectsTag);
     }
 
     public void DieEffect(Vector3 exploPos)
     {
+        if (disable)
+            return;
+
         AppServices.Instance.AudioManager.SoundEffectsManager.PlaySound(SoundEffects.Explosion);
 
         var explosion = AppServices.Instance.PoolManager.GetPooledPrefabTimed(PooledPrefabs.SmallExplsion, 3);

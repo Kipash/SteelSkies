@@ -22,6 +22,7 @@ public class PrefabPoolManager
     [SerializeField] PooledPrefab[] pooledPrefabs;
     [Space(20)]
     [SerializeField] Transform prefabRepository;
+    [SerializeField] bool preBuild;
 
     string poolTag = "PoolTag";
     Dictionary<PooledPrefabs, PooledPrefab> prefabs = new Dictionary<global::PooledPrefabs, PooledPrefab>();
@@ -32,7 +33,8 @@ public class PrefabPoolManager
         prefabs = pooledPrefabs.GroupBy(x => x.Type).ToDictionary((x => x.Key), (x => x.First()));
         AppManager.Instance.OnLoadLevel += ForceDisable;
 
-        PreBuild();
+        if(preBuild)
+            PreBuild();
     }
 
     void PreBuild()
@@ -72,7 +74,7 @@ public class PrefabPoolManager
     public GameObject GetPooledPrefabTimed(PooledPrefabs prefab, float t)
     {
         var g = GetPooledPrefab(prefab);
-        Timing.Instance.CallDelayedOnInstance(t, () => { DeactivatePrefab(g); });
+        //Timing.Instance.CallDelayedOnInstance(t, () => { DeactivatePrefab(g); });
         return g;
     }
     public bool DeactivatePrefab(GameObject prefab)

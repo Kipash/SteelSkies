@@ -17,7 +17,6 @@ public class SoundEffectsManager
 
     public void PlaySound(SoundEffects sound)
     {
-
         if (!effects.ContainsKey(sound))
         {
             Debug.LogErrorFormat("Sound {0} isnt registered, but still trying to be played!", sound);

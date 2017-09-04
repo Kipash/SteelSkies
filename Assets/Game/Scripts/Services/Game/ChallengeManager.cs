@@ -58,6 +58,9 @@ public class ChallengeManager
             BestScore = score;
         else
             BestScore = 0;
+
+        score = 0;
+        GameServices.Instance.GameUIManager.GameScore.SetNumericDial(Score);
     }
 
     public void DeactivateEntity(GameObject go)

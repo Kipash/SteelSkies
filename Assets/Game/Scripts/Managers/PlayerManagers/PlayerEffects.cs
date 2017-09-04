@@ -17,7 +17,7 @@ public class PlayerEffects
     [SerializeField] float flashDuration;
 
     [SerializeField] float minDif;
-    
+
     string flashTag = "PlayerFlash"; //TODO: Random ?
     float currentDelay;
 

@@ -51,9 +51,4 @@ public class GameServices : MonoBehaviour
         Timing.KillCoroutines(ChallengeManager.SpawningTag);
         AppManager.Instance.OnLoadLevel -= GameServices_OnLoadLevel;
     }
-
-    private void Update()
-    {
-        GameUIManager.GameScore.SetDial(ChallengeManager.Score);
-    }
 }

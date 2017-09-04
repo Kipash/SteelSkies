@@ -10,4 +10,5 @@ public class GameUIManager
     public GameObject NextWave;
 
     public Dial GameScore;
+    public Dial PlayerHealth;
 }

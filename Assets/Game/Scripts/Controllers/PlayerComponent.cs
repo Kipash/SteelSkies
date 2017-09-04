@@ -39,6 +39,8 @@ public class PlayerComponent : Entity
 
         IsAlive = false;
         DisablePlayer();
+
+        GameServices.Instance.GameUIManager.PlayerHealth.SetImageDial(Health);
     }
     private void Update()
     {
@@ -184,6 +186,7 @@ public class PlayerComponent : Entity
         {
             playerEffects.HitEffect();
             base.Hit(damage);
+            GameServices.Instance.GameUIManager.PlayerHealth.SetImageDial(Health);
         }
     }
 }

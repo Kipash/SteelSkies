@@ -51,6 +51,7 @@ public class ChallengeManager
         Timing.Instance.AddTag(SpawningTag, false);
 
         GameServices.Instance.GameManager.OnGameStart += ScanOponents;
+        GameServices.Instance.GameManager.OnGameOver += StopAndDestroyCurrentWave;
 
         var score = PlayerPrefs.GetInt("score", -1);
         if (score != -1)
@@ -78,6 +79,8 @@ public class ChallengeManager
             }
 
             PlayerPrefs.SetInt("score", Score);
+
+            GameServices.Instance.GameUIManager.GameScore.SetNumericDial(Score);
         }
         else
             Debug.LogErrorFormat("Game object '{0}' is not listed!", go.name);
@@ -116,6 +119,19 @@ public class ChallengeManager
             Timing.RunCoroutine(SpawnWave(wave), SpawningTag);
         }
     }
+
+    void StopAndDestroyCurrentWave()
+    {
+        Timing.Instance.KillCoroutinesOnInstance(SpawningTag);
+
+        foreach (var x in currentGameObjects.ToArray())
+            DeactivateEntity(x);
+
+        Score = 0;
+        GameServices.Instance.GameUIManager.GameScore.SetNumericDial(Score);
+        isSpawningWave = false;
+    }
+
     IEnumerator<float> SpawnWave(WaveInfo info)
     {
         yield return Timing.WaitForSeconds(info.PreWarm);

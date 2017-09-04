@@ -19,6 +19,9 @@ public class GameManager
         OnGameStart += Start;
         OnGameOver += End;
 
+        OnGameStart += () => { Debug.Log("GameManager_OnGameStart"); };
+        OnGameOver += () => { Debug.Log("GameManager_OnGameOver"); };
+
         AppServices.Instance.AppInput.AnyKeyDown += StartGame;
 
         End();

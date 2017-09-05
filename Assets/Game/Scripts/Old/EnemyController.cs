@@ -107,7 +107,7 @@ public class EnemyController : Entity
         var ex = AppServices.Instance.PoolManager.GetPooledPrefabTimed(PooledPrefabs.Explosion, explosionDuration);
         ex.transform.position = transform.position;
         
-        GameServices.Instance.ChallengeManager.DeactivateEntity(gameObject);
+        GameServices.Instance.ChallengeManager.DeactivateEntity(gameObject, true);
         SetDefaultHP(defaultHP);
         StopAllCoroutines();
     }

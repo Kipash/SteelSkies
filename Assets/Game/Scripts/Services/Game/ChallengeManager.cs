@@ -34,6 +34,9 @@ public class ChallengeManager
     [Header("Wawe")]
     [SerializeField] List<WaveInfo> waves;
 
+    [Header("Combos & bonuses")]
+    [SerializeField] float minimalKillDelay;
+
     [Header("Debug")]
     [SerializeField] bool disabled;
 
@@ -43,8 +46,18 @@ public class ChallengeManager
 
     public const string SpawningTag = "SpawningTag";
 
-    public int Score;
-    public int BestScore;
+
+    float lastKill;
+    int currCombo;
+
+    int score;
+    public int Score
+    {
+        get { return score; }
+        set { score = value; GameServices.Instance.GameUIManager.GameScore.SetNumericDial(Score); }
+    }
+
+    //public int BestScore;
 
     public void Initialize()
     {
@@ -53,37 +66,35 @@ public class ChallengeManager
         GameServices.Instance.GameManager.OnGameStart += ScanOponents;
         GameServices.Instance.GameManager.OnGameOver += StopAndDestroyCurrentWave;
 
-        var score = PlayerPrefs.GetInt("score", -1);
-        if (score != -1)
-            BestScore = score;
-        else
-            BestScore = 0;
-
-        score = 0;
-        GameServices.Instance.GameUIManager.GameScore.SetNumericDial(Score);
+        Score = 0;
     }
 
-    public void DeactivateEntity(GameObject go)
+    public void DeactivateEntity(GameObject go, bool natural)
     {
         if (currentGameObjects.Contains(go))
         {
+            if(natural)
+            {
+                int s = 10;
+
+                //Debug.LogFormat("{0} - {1} < {2}", Time.time, lastKill, minimalKillDelay);
+                if (Time.time - lastKill < minimalKillDelay)
+                {
+                    currCombo++;
+                }
+                else
+                    currCombo = 0;
+
+                var msg = currCombo > 0 ? string.Format("+{0}X{1}", s, currCombo + 1) : string.Format("+{0}",s);
+                GameServices.Instance.GameUIManager.ShowDialog(go.transform.position, msg);
+                Score += s * (currCombo + 1);
+
+                lastKill = Time.time;
+            }
+
             AppServices.Instance.PoolManager.DeactivatePrefab(go);
             currentGameObjects.Remove(go);
             ScanOponents();
-
-            Score += 10;
-            var score = PlayerPrefs.GetInt("score", -1);
-            if (score != -1)
-            {
-                if (score > Score)
-                    BestScore = score;
-                else
-                    BestScore = Score;
-            }
-
-            PlayerPrefs.SetInt("score", Score);
-
-            GameServices.Instance.GameUIManager.GameScore.SetNumericDial(Score);
         }
         else
             Debug.LogErrorFormat("Game object '{0}' is not listed!", go.name);
@@ -128,10 +139,9 @@ public class ChallengeManager
         Timing.Instance.KillCoroutinesOnInstance(SpawningTag);
 
         foreach (var x in currentGameObjects.ToArray())
-            DeactivateEntity(x);
+            DeactivateEntity(x, false);
 
         Score = 0;
-        GameServices.Instance.GameUIManager.GameScore.SetNumericDial(Score);
         isSpawningWave = false;
     }
 

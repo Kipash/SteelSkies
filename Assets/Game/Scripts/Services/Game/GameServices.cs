@@ -21,10 +21,7 @@ public class GameServices : MonoBehaviour
 
     [Header(" - GameUIManager - ")]
     public GameUIManager GameUIManager;
-
-    [Header("Temp")]
-    [SerializeField] Text scoreText;
-
+    
     void Awake()
     {
         IsMainManagerPresent = FindObjectOfType<AppManager>() != null;

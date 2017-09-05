@@ -25,4 +25,10 @@ public enum PooledPrefabs
     SmallPlane = 10,
 
     #endregion
+    #region UI
+
+    UITextBubble = 11,
+
+    #endregion
+
 }

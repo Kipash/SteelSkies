@@ -110,6 +110,8 @@ public class Projectile : MonoBehaviour
 
     void Destroy()
     {
+        CancelInvoke();
+
         if (!AppServices.Instance.PoolManager.DeactivatePrefab(gameObject))
         {
             Debug.LogErrorFormat("GameObject {0} is acting as PooledPrefab, object was destroyed!", gameObject.name);

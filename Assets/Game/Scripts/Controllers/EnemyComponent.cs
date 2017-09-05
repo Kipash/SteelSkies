@@ -26,7 +26,7 @@ public class EnemyComponent : Entity
         SetDefaultHP(defaultHP);
 
         motor.OnDisable = null;
-        motor.OnDisable += Die;
+        motor.OnDisable += () => { Deactivate(false); } ;
         motor.Start();
 
         effects.Start();
@@ -48,16 +48,17 @@ public class EnemyComponent : Entity
     }
     public override void Die()
     {
-        //Debug.Log(motor.OnDisable.GetInvocationList().Length);
+        effects.DieEffect(transform.position);
+        Deactivate(true);
+    }
+    void Deactivate(bool natural)
+    {
         motor.OnDisable = null;
+        GameServices.Instance.ChallengeManager.DeactivateEntity(gameObject, natural);
+        SetDefaultHP(defaultHP);
 
         Timing.KillCoroutines(EnemyEffects.EnemyEffectsTag);
         Timing.KillCoroutines(EnemyWeaponry.EnemyTimingTag);
-
-        effects.DieEffect(transform.position);
-        
-        GameServices.Instance.ChallengeManager.DeactivateEntity(gameObject);
-        SetDefaultHP(defaultHP);
     }
     public override void Hit(int damage)
     {

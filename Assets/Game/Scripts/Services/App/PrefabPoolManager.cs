@@ -67,14 +67,14 @@ public class PrefabPoolManager
         }
         pPref.AvailableObjects.Remove(g);
         g.SetActive(true);
-        g.transform.parent = null;
+        g.transform.SetParent(null);
 
         return g;
     }
     public GameObject GetPooledPrefabTimed(PooledPrefabs prefab, float t)
     {
         var g = GetPooledPrefab(prefab);
-        //Timing.Instance.CallDelayedOnInstance(t, () => { DeactivatePrefab(g); });
+        Timing.Instance.CallDelayedOnInstance(t, () => { DeactivatePrefab(g); });
         return g;
     }
     public bool DeactivatePrefab(GameObject prefab)
@@ -97,7 +97,7 @@ public class PrefabPoolManager
     void SetParent(GameObject go, PooledPrefab prefab, bool deactivate = true)
     {
         var parent = GetOrCreateGO(prefabRepository, prefab.Type.ToString());
-        go.transform.parent = parent.transform;
+        go.transform.SetParent(parent.transform);
 
         if (deactivate)
             go.SetActive(false);

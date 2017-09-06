@@ -163,6 +163,9 @@ public class PlayerComponent : Entity
         SetDefaultHP(defaultHP);
         gameObject.SetActive(true);
         GameServices.Instance.GameUIManager.PlayerHealth.SetImageDial(Health);
+
+        //~~
+        Camera.main.ResetProjectionMatrix();
     }
 
     public override void Die()

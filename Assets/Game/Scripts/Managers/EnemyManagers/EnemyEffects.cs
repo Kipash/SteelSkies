@@ -16,8 +16,20 @@ public class EnemyEffects
     [SerializeField] bool disable;
 
     Renderer[] renderers;
+    List<CoroutineHandle> routines = new List<CoroutineHandle>();
 
     public const string EnemyEffectsTag = "EnemyEffectsTag";
+
+    public void Deactivate()
+    {
+        KillAllCoroutine();
+        routines.Clear();
+    }
+    void KillAllCoroutine()
+    {
+        foreach (var x in routines)
+            Timing.KillCoroutines(x);
+    }
 
     public void Start()
     {
@@ -33,7 +45,7 @@ public class EnemyEffects
     {
         if (disable)
             return;
-        Timing.Instance.RunCoroutineOnInstance(Flash(), EnemyEffectsTag);
+        routines.Add(Timing.Instance.RunCoroutineOnInstance(Flash(), EnemyEffectsTag));
     }
 
     public void DieEffect(Vector3 exploPos)

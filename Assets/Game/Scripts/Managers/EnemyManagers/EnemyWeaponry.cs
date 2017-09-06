@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using MovementEffects;
+using System.Collections.Generic;
 
 [Serializable]
 public class EnemyWeaponry
@@ -21,13 +22,29 @@ public class EnemyWeaponry
 
     public const string EnemyTimingTag = "EnemyTag";
 
+    List<CoroutineHandle> routines = new List<CoroutineHandle>();
+
+    public void Deactivate()
+    {
+        KillAllCoroutine();
+        routines.Clear();
+    }
+    void KillAllCoroutine()
+    {
+        foreach (var x in routines)
+            Timing.KillCoroutines(x);
+    }
+
     public void Start()
     {
         if (disable)
             return;
 
         Timing.Instance.AddTag(EnemyTimingTag, false);
-        Timing.CallPeriodically(Mathf.Infinity, fireRate + UnityEngine.Random.Range(0, fireRateDeviation), Shoot, EnemyTimingTag);
+
+        routines.Add(Timing.CallPeriodically(Mathf.Infinity,
+             fireRate + UnityEngine.Random.Range(0, fireRateDeviation),
+             Shoot, EnemyTimingTag));
     }
 
     public void RotateTowers()

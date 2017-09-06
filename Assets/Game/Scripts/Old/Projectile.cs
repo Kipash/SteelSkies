@@ -38,7 +38,7 @@ public class Projectile : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag(TargetTag))
+        if (collision.CompareTag(TargetTag) && collision.gameObject.activeInHierarchy)
         {
             var c1 = collision.GetComponentInChildren<Entity>();
             var c2 = collision.GetComponentInParent<Entity>();
@@ -52,7 +52,8 @@ public class Projectile : MonoBehaviour
             }
             else
             {
-                Debug.LogError(collision.gameObject.name + " should have a IHitteble in it's hierarchy!");
+                Debug.LogErrorFormat("GameObject '{0}'(parent:{1}, active:{2}) should have a IHitteble in it's hierarchy!",
+                    collision.gameObject.name, collision.gameObject.transform.parent, collision.gameObject.activeInHierarchy);
             }
             Destroy();
         }

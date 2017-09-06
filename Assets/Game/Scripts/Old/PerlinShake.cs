@@ -100,5 +100,4 @@ public class PerlinShake : MonoBehaviour
         }
         camera.ResetProjectionMatrix();
     }
-
 }

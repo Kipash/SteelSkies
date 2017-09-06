@@ -38,8 +38,8 @@ public class EnemyComponent : Entity
     }
     private void OnDisable()
     {
-        Timing.KillCoroutines(EnemyEffects.EnemyEffectsTag);
-        Timing.KillCoroutines(EnemyWeaponry.EnemyTimingTag);
+        effects.Deactivate();
+        weaponry.Deactivate();
     }
     private void Update()
     {
@@ -57,8 +57,7 @@ public class EnemyComponent : Entity
         GameServices.Instance.ChallengeManager.DeactivateEntity(gameObject, natural);
         SetDefaultHP(defaultHP);
 
-        Timing.KillCoroutines(EnemyEffects.EnemyEffectsTag);
-        Timing.KillCoroutines(EnemyWeaponry.EnemyTimingTag);
+        OnDisable();
     }
     public override void Hit(int damage)
     {

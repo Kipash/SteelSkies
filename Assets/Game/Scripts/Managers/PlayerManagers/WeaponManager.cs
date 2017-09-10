@@ -3,6 +3,8 @@ using System.Collections;
 using System;
 using System.Linq;
 using UnityEngine.UI;
+using MovementEffects;
+using System.Collections.Generic;
 
 [Serializable]
 public class WeaponManager
@@ -12,55 +14,57 @@ public class WeaponManager
     [SerializeField] WeaponType primaryWeapon;
 
     Weapon[] allWeapons;
-    public float FireTrashold { get; private set; }
-
-    Weapon primary;
-    Weapon secundary;
-
     public Weapon CurrentWeapon { get; private set; }
 
-    public bool Disabled;
-
-    public float GetCurrentWarmUp
+    bool disabled;
+    public bool Disabled
+    {
+        get { return disabled; }
+        set { disabled = value; IsShooting = !value; }
+    }
+    public bool IsShooting
     {
         get
         {
-            if (FireTrashold == -1)
-                return 0;
-            else
-                return Mathf.Clamp01((Time.time - FireTrashold) / CurrentWeapon.Data.FireMods[1].PrewarmTime);
+            return Timing.Instance.IsInvoking("Shoot");
         }
+        set
+        {
+            if (value && !Timing.Instance.IsInvoking("Shoot"))
+            {
+                var hl = Timing.CallPeriodically(Mathf.Infinity, CurrentWeapon.Data.FireMod.FireRate, Shoot, Segment.Update);
+                routines.Add(hl);
+            }
+            else if (!value && Timing.Instance.IsInvoking("Shoot"))
+                Deactivate();
+        }
+    }
+
+    List<CoroutineHandle> routines = new List<CoroutineHandle>();
+
+    public void Deactivate()
+    {
+        CurrentWeapon.Deactivate();
+        KillAllCoroutine();
+        routines.Clear();
+    }
+    void KillAllCoroutine()
+    {
+        foreach (var x in routines)
+            Timing.KillCoroutines(x);
     }
 
     public void Start()
     {
         allWeapons = WeaponHolder.GetComponentsInChildren<Weapon>();
-        primary = allWeapons.First(x => x.Data.Type == primaryWeapon);
-        ChangeWeapon(primary);
-        FireTrashold = -1;
+        var wep = allWeapons.First(x => x.Data.Type == primaryWeapon);
+        ChangeWeapon(wep);
     }
-
-    public void PrewarmShot()
+    
+    void Shoot()
     {
         if (!Disabled)
-        {
-            FireTrashold = Time.time;
-        }
-    }
-    public void Shoot()
-    {
-        if (!Disabled)
-        {
-            CurrentWeapon.Shoot(Time.time - FireTrashold);
-            FireTrashold = -1;
-            if (!CurrentWeapon.Data.HasAmmo)
-            {
-                if (CurrentWeapon == primary)
-                    Debug.LogErrorFormat("primary({0}) weapon has no ammo({1})! It should be set to '-1' - infinite", CurrentWeapon.Data.Name, CurrentWeapon.Data.Ammo);
-
-                ChangeWeapon(primary);
-            }
-        }
+            CurrentWeapon.Shoot();
     }
     void ChangeWeapon(Weapon wep)
     {
@@ -75,14 +79,5 @@ public class WeaponManager
             });
 
         wep.Data.Graphics.SetActive(true);
-    }
-
-    public void SetSecundary(Weapon wep)
-    {
-        if (!Disabled)
-        {
-            secundary = wep;
-            ChangeWeapon(secundary);
-        }
     }
 }

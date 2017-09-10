@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System;
 using System.Linq;
 using UnityEngine.Events;
+using MovementEffects;
 
 public enum WeaponType { none = 0, Machinegun = 1, RocketLauncher = 2}
 
@@ -12,7 +13,7 @@ public class FireSpot
 {
     public Transform Spot;
     public ParticleSystem FireParticle;
-    public float ParticleCount;
+    public int ParticleCount;
 }
 
 [Serializable]
@@ -22,15 +23,13 @@ public class WeaponFireMod
 
     [Header("Visuals")]
     public PooledPrefabs Projectile;
+    public SoundEffects SFX;
     public FireSpot[] FireSpots;
     
     [Header("Stats")]
-    public bool ShotPerBarrel;
-    public float AmmoPerShot;
-    public float PrewarmTime;
     public int Damage;
-    public int AmmunitionPerShot;
-    public int BurstTimeSpace;
+    public float BurstTimeSpace;
+    public float Bursts;
     public float FireRate;
 }
 
@@ -51,28 +50,28 @@ public class WeaponData
 
     public string Name;
     public WeaponType Type;
-    public WeaponFireMod[] FireMods;
+    public WeaponFireMod FireMod;
 }
 
 public class Weapon : MonoBehaviour
 {
     public WeaponData Data;
-    
-    private void Start()
-    {
-        Data.FireMods = Data.FireMods.OrderBy(x => x.PrewarmTime).ToArray();
-    }
+    [SerializeField] string enemyString;
+    List<CoroutineHandle> routines = new List<CoroutineHandle>();
 
-    public void CreateProjectile(WeaponFireMod currFireMod)
+    public void CreateProjectile()
     {
-        foreach (var fireSpot in currFireMod.FireSpots)
+        foreach (var fireSpot in Data.FireMod.FireSpots)
         {
             var t = fireSpot.Spot;
+
+            if (fireSpot.FireParticle != null)
+                fireSpot.FireParticle.Emit(fireSpot.ParticleCount);
 
             var point = t.gameObject.transform.right;
             float rot_z = Mathf.Atan2(point.y, point.x) * Mathf.Rad2Deg;
 
-            var go = AppServices.Instance.PoolManager.GetPooledPrefab(currFireMod.Projectile);
+            var go = AppServices.Instance.PoolManager.GetPooledPrefab(Data.FireMod.Projectile);
             go.transform.position = fireSpot.Spot.position;
             go.transform.rotation = Quaternion.Euler(0f, 0f, rot_z);
 
@@ -80,39 +79,25 @@ public class Weapon : MonoBehaviour
                 x.Clear();
 
             var bu = go.GetComponent<Projectile>();
-            bu.TargetTag = "Enemy";
-            bu.Damage = currFireMod.Damage;
+            bu.TargetTag = enemyString;
+            bu.Damage = Data.FireMod.Damage;
         }
     }
 
-    public void Shoot(float shootTime)
+    public void Shoot()
     {
-        AppServices.Instance.AudioManager.SoundEffectsManager.PlaySound(SoundEffects.Machinegun);
-
-        WeaponFireMod fMode = GetFireMod(shootTime);
-        if (fMode != null)
-            CreateProjectile(fMode);
+        AppServices.Instance.AudioManager.SoundEffectsManager.PlaySound(Data.FireMod.SFX);
+        for (int i = 0; i < Data.FireMod.Bursts; i++)
+        routines.Add(Timing.Instance.CallDelayedOnInstance(Data.FireMod.BurstTimeSpace * i, CreateProjectile));
     }
-
-    public WeaponFireMod GetFireMod(float shootTime)
+    public void Deactivate()
     {
-        if (Data.FireMods.Length != 0)
-        {
-            for (int i = 0; i < Data.FireMods.Length; i++)
-            {
-                if (i + 1 != Data.FireMods.Length)
-                {
-                    if (Data.FireMods[i].PrewarmTime < shootTime && shootTime < Data.FireMods[i + 1].PrewarmTime)
-                        return Data.FireMods[i];
-                }
-                else
-                {
-                    if (Data.FireMods[i].PrewarmTime < shootTime)
-                        return Data.FireMods[i];
-                }
-            }
-        }
-        
-        return null;
+        KillAllCoroutine();
+        routines.Clear();
+    }
+    void KillAllCoroutine()
+    {
+        foreach (var x in routines)
+            Timing.KillCoroutines(x);
     }
 }

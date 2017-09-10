@@ -11,11 +11,10 @@ public class EnemyWeaponry
 
     [SerializeField] bool disable;
     [SerializeField] bool debug;
-    [SerializeField] float fireRate;
+    [SerializeField] Weapon wep;
     [SerializeField] float fireRateDeviation;
-    [SerializeField] int damage;
-    [SerializeField] PooledPrefabs projectile;
-    [SerializeField] SoundEffects shootSFX;
+
+
     [SerializeField] Tower[] Towers;
 
     [HideInInspector] public Transform Target;
@@ -43,7 +42,7 @@ public class EnemyWeaponry
         Timing.Instance.AddTag(EnemyTimingTag, false);
 
         routines.Add(Timing.CallPeriodically(Mathf.Infinity,
-             fireRate + UnityEngine.Random.Range(0, fireRateDeviation),
+             wep.Data.FireMod.FireRate + UnityEngine.Random.Range(0, fireRateDeviation),
              Shoot, EnemyTimingTag));
     }
 
@@ -84,35 +83,13 @@ public class EnemyWeaponry
         if (disable)
             return;
 
-        AppServices.Instance.AudioManager.SoundEffectsManager.PlaySound(shootSFX);
+        AppServices.Instance.AudioManager.SoundEffectsManager.PlaySound(wep.Data.FireMod.SFX);
 
         foreach (var t in Towers)
         {
             if (t.TowerOrigin.gameObject.active)
             {
-                foreach (var b in t.Barrels)
-                {
-                    foreach (var e in b.Effects)
-                        e.Particle.Emit(e.Amount);
-
-                    var p = b.SpawnSpot;
-
-                    var go = AppServices.Instance.PoolManager.GetPooledPrefab(projectile);
-                    go.transform.position = p.position;
-                    go.transform.rotation = p.rotation;
-                    foreach (var x in go.GetComponentsInChildren<TrailRenderer>())
-                        x.Clear();
-
-                    var bu = go.GetComponent<Projectile>();
-                    if (bu != null && Target != null)
-                    {
-                        //
-                        var gObject = Target.gameObject;
-                        var tag = gObject.tag;
-                        bu.TargetTag = tag;
-                        bu.Damage = damage;
-                    }
-                }
+                wep.Shoot();
             }
         }
     }

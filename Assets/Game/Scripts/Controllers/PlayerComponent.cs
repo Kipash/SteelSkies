@@ -44,7 +44,7 @@ public class PlayerComponent : Entity
     {
         if (IsAlive)
         {
-            playerEffects.SetTransition(weaponManager.GetCurrentWarmUp);
+            //playerEffects.SetTransition(weaponManager.GetCurrentWarmUp);
             playerEffects.Update();
         }
     }
@@ -124,26 +124,6 @@ public class PlayerComponent : Entity
             CallBackOnPass = new KeyCallBack()
             {
                 OnHold = new Action[] { motor.MoveDown }
-            },
-        },
-        typeof(PlayerComponent));
-
-        #endregion
-
-        #region WeaponManager
-
-        AppServices.Instance.AppInput.AddBind(new KeyBind()
-        {
-            Name = "Shoot",
-            KeyCodes = CurrentBinds.BindedKeys[RegisteredKeys.Fire],
-
-            Key = RegisteredKeys.Fire,
-            JamKey = RegisteredKeys.none,
-
-            CallBackOnPass = new KeyCallBack()
-            {
-                OnPress = new Action[] { weaponManager.PrewarmShot },
-                OnRelase = new Action[] { weaponManager.Shoot }
             },
         },
         typeof(PlayerComponent));

@@ -18,5 +18,5 @@ public class Tower
 
     [Header("Barrels")]
     public Transform BarrelOrigin;
-    public Barrel[] Barrels;
+    //public Barrel[] Barrels;
 }

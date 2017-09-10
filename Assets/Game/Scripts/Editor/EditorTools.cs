@@ -10,6 +10,12 @@ public class EditorTools : MonoBehaviour
         EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo();
         EditorSceneManager.OpenScene("Assets/Game/Scenes/Main.unity");
     }
+    [MenuItem("Tools/Scenes/StartIntro")]
+    public static void LoadIntro()
+    {
+        EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo();
+        EditorSceneManager.OpenScene("Assets/Game/Scenes/StartCinematic.unity");
+    }
     [MenuItem("Tools/Scenes/Pre scene")]
     public static void LoadMainMenu()
     {

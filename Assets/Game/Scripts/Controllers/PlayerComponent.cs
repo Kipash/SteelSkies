@@ -146,6 +146,7 @@ public class PlayerComponent : Entity
 
         //~~
         Camera.main.ResetProjectionMatrix();
+        Camera.main.ResetWorldToCameraMatrix();
     }
 
     public override void Die()

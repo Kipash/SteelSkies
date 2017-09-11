@@ -26,16 +26,16 @@ public class WeaponManager
     {
         get
         {
-            return Timing.Instance.IsInvoking("Shoot");
+            return routines.Count != 0;
         }
         set
         {
-            if (value && !Timing.Instance.IsInvoking("Shoot"))
+            if (value && routines.Count == 0)
             {
                 var hl = Timing.CallPeriodically(Mathf.Infinity, CurrentWeapon.Data.FireMod.FireRate, Shoot, Segment.Update);
                 routines.Add(hl);
             }
-            else if (!value && Timing.Instance.IsInvoking("Shoot"))
+            else if (!value && routines.Count != 0)
                 Deactivate();
         }
     }

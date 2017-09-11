@@ -42,7 +42,7 @@ public class EnemyMotor
             path = GameServices.Instance.WayPointManager.Paths[pathSettings.PathType].Points;
         }
     }
-
+    Transform point;
     public void Update()
     {
         if (path == null)
@@ -50,11 +50,13 @@ public class EnemyMotor
 
         if (path.Length != 0)
         {
-            Transform point;
             if (pathSettings.PathStyle == PathStyle.Circle || pathSettings.PathStyle == PathStyle.Line)
                 point = path[currIndex];
-            else if (pathSettings.PathStyle == PathStyle.Random)
-                point = path[UnityEngine.Random.Range(0, path.Length)];
+            else if (pathSettings.PathStyle == PathStyle.Random && point != null)
+            {
+                if(Vector3.Distance(transform.position, point.position) < minDistance)
+                    point = path[UnityEngine.Random.Range(0, path.Length)];
+            }
             else
                 point = path[0];
 

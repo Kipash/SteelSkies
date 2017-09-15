@@ -3,6 +3,7 @@ using System.Collections;
 using App.Player.Services;
 using App.Player.Models;
 using System;
+using MovementEffects;
 
 public class PlayerComponent : Entity
 {
@@ -12,6 +13,7 @@ public class PlayerComponent : Entity
 
     [Header("Player")]
     [SerializeField] int defaultHP;
+    [SerializeField] int damageOnCollision;
 
     bool isAlive;
     public bool IsAlive
@@ -25,9 +27,11 @@ public class PlayerComponent : Entity
             playerEffects.Disabled = !value;
         }
     }
-
+    
     private void Start()
     {
+        Timing.Instance.AddTag(GetType().ToString(), false);
+
         RegisterCallBacks();
 
         weaponManager.Start();
@@ -39,6 +43,8 @@ public class PlayerComponent : Entity
 
         DisablePlayer();
         GameServices.Instance.GameUIManager.PlayerHealth.SetImageDial(Health);
+
+        motor.colCallback += OnCrash;
     }
     private void Update()
     {
@@ -46,6 +52,7 @@ public class PlayerComponent : Entity
         {
             //playerEffects.SetTransition(weaponManager.GetCurrentWarmUp);
             playerEffects.Update();
+            motor.Update();
         }
     }
 
@@ -171,6 +178,28 @@ public class PlayerComponent : Entity
             playerEffects.HitEffect();
             base.Hit(damage);
             GameServices.Instance.GameUIManager.PlayerHealth.SetImageDial(Health);
+        }
+    }
+    void OnCrash(GameObject go)
+    {
+        if (!Invisible)
+        {
+            if (go.CompareTag("Enemy"))
+            {
+                var c1 = go.GetComponentInChildren<EnemyComponent>();
+                var c2 = go.GetComponentInParent<EnemyComponent>();
+                var c = (c1 == null ? c2 : c1);
+                if (c != null)
+                {
+                    c.Crash(damageOnCollision);
+                    Crash(c.DamageOnCollision);
+                }
+                else
+                {
+                    Debug.LogErrorFormat("GameObject '{0}'(parent:{1}, active:{2}) should have a IHitteble in it's hierarchy!",
+                        go.name, go.transform.parent, go.activeInHierarchy);
+                }
+            }
         }
     }
 }

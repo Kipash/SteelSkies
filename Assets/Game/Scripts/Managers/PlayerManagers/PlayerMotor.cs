@@ -7,11 +7,19 @@ using UnityEngine;
 [Serializable]
 public class PlayerMotor
 {
-    [Header("GroundCheck")]
-    [SerializeField] Transform groundCheckOrigin;
-    [SerializeField] float groundCheckLength;
-    [SerializeField] LayerMask groundCheckMask;
-    bool isGrounded;
+    [Header("Raycasts")]
+    [SerializeField] LayerMask rayCheckMask;
+    [SerializeField] bool debugRays;
+
+    [Header("BlockCheck")]
+    [SerializeField] Transform blockCheckOrigin;
+    [SerializeField] float blockCheckLength;
+    Directions block = new Directions();
+
+    [Header("Collision Check")]
+    [SerializeField]
+    Transform collisionCheckOrigin;
+    [SerializeField] float collisionCheckLength;
 
     [Header("Movement")]
     [SerializeField] Directions playerSpeed;
@@ -27,19 +35,78 @@ public class PlayerMotor
     [Header("Generic")]
     [SerializeField] Transform transform;
 
-
+    public CollisionCallBack colCallback;
+    RaycastHit2D[] hit;
     public bool Disabled;
 
     public void FixedUpdate()
     {
-        //int contacts = Physics2D.RaycastNonAlloc(groundCheckOrigin.position, Vector2.down, hits, groundCheckLength, groundCheckMask);
-        //print(contacts);
-        //isGrounded = contacts > 0;
+        CalculateTilt();
+        CollisionChecks();
+    }
 
-        isGrounded = Physics2D.Raycast(groundCheckOrigin.position, Vector2.down, groundCheckLength, groundCheckMask);
+    public void Update()
+    {
+        if(debugRays)
+            DrawDebugLines();
+    }
+    void DrawDebugLines()
+    {
+        // - Down -
+        Debug.DrawLine(blockCheckOrigin.position,
+            new Vector3(blockCheckOrigin.position.x,
+                blockCheckOrigin.position.y - blockCheckLength,
+                blockCheckOrigin.position.z),
+            Color.green);
+        // - Up -
+        Debug.DrawLine(blockCheckOrigin.position,
+            new Vector3(blockCheckOrigin.position.x,
+                blockCheckOrigin.position.y + blockCheckLength,
+                blockCheckOrigin.position.z),
+            Color.green);
 
-        Debug.DrawLine(groundCheckOrigin.position, new Vector3(groundCheckOrigin.position.x, groundCheckOrigin.position.y - groundCheckLength, groundCheckOrigin.position.z), Color.green);
+        // - Right -
+        Debug.DrawLine(collisionCheckOrigin.position,
+            new Vector3(collisionCheckOrigin.position.x + collisionCheckLength,
+                collisionCheckOrigin.position.y,
+                collisionCheckOrigin.position.z),
+            Color.red);
 
+        // - Left -
+        Debug.DrawLine(collisionCheckOrigin.position,
+            new Vector3(collisionCheckOrigin.position.x - collisionCheckLength,
+                collisionCheckOrigin.position.y,
+                collisionCheckOrigin.position.z),
+            Color.red);
+    }
+    void CollisionChecks()
+    {
+        block.Down = Physics2D.Raycast(blockCheckOrigin.position, Vector2.down, blockCheckLength, rayCheckMask) ? 1 : 0;
+        block.Up = Physics2D.Raycast(blockCheckOrigin.position, Vector2.up, blockCheckLength, rayCheckMask) ? 1 : 0;
+
+        hit = Physics2D.RaycastAll(collisionCheckOrigin.position, Vector2.right, collisionCheckLength, rayCheckMask);
+        
+        if (hit.Length > 0 && colCallback != null)
+        {
+            block.Right = 1;
+            colCallback.Invoke(hit.First().transform.gameObject);
+        }
+        else
+            block.Right = 0;
+
+
+        hit = Physics2D.RaycastAll(collisionCheckOrigin.position, Vector2.left, collisionCheckLength, rayCheckMask);
+        if (hit.Length > 0 && colCallback != null)
+        {
+            block.Left = 1;
+            colCallback.Invoke(hit.First().transform.gameObject);
+        }
+        else
+            block.Left = 0;
+    }
+
+    void CalculateTilt()
+    {
         gfx.transform.rotation = Quaternion.Euler
         (
             Mathf.LerpAngle
@@ -48,9 +115,9 @@ public class PlayerMotor
                 targetedTilt.x * tiltSensitivity,
                 tiltSpeed * Time.fixedDeltaTime
             ),
-
+        
             180,
-
+        
             Mathf.LerpAngle
             (
                 gfx.transform.rotation.eulerAngles.z,
@@ -58,18 +125,19 @@ public class PlayerMotor
                 tiltSpeed * Time.fixedDeltaTime
             )
         );
-
-        
     }
 
     public void MoveUp()
     {
-        Move(Vector3.up * playerSpeed.Up * Time.deltaTime, new Vector2(tilt.Up, targetedTilt.y));        
+        if (block.Up == 0)
+        {
+            Move(Vector3.up * playerSpeed.Up * Time.deltaTime, new Vector2(tilt.Up, targetedTilt.y));
+        }
     }
 
     public void MoveDown()
     {
-        if (!isGrounded)
+        if (block.Down == 0)
         {
             Move(Vector3.down * playerSpeed.Down * Time.deltaTime, new Vector2(tilt.Down, targetedTilt.y));
         }
@@ -77,12 +145,18 @@ public class PlayerMotor
 
     public void MoveLeft()
     {
-        Move(Vector3.left * playerSpeed.Left * Time.deltaTime, new Vector2(targetedTilt.x, tilt.Left));
+        if (block.Left == 0)
+        {
+            Move(Vector3.left * playerSpeed.Left * Time.deltaTime, new Vector2(targetedTilt.x, tilt.Left));
+        }
     }
 
     public void MoveRight()
     {
-        Move(Vector3.right * playerSpeed.Right * Time.deltaTime, new Vector2(targetedTilt.x, tilt.Right));
+        if (block.Right == 0)
+        {
+            Move(Vector3.right * playerSpeed.Right * Time.deltaTime, new Vector2(targetedTilt.x, tilt.Right));
+        }
     }
 
     void Move(Vector3 motion, Vector2 tilt)

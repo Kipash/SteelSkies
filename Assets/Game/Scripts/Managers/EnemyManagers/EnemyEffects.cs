@@ -39,6 +39,12 @@ public class EnemyEffects
             renderers = gameObject.GetComponentsInChildren<Renderer>();
         else
             renderers = manualRenderers;
+
+        if(renderers != null)
+        {
+            foreach (var r in renderers)
+                r.materials[0].SetColor("_EmissionColor", Color.black);
+        }
     }
 
     public void HitEffect()

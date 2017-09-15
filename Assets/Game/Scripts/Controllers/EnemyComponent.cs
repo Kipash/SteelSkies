@@ -14,6 +14,7 @@ public class EnemyComponent : Entity
 
     [Header("Health")]
     [SerializeField] int defaultHP;
+    public int DamageOnCollision;
 
     public PathSettings PathSettings
     {
@@ -23,6 +24,7 @@ public class EnemyComponent : Entity
 
     private void OnEnable()
     {
+        Timing.Instance.AddTag(GetType().ToString(), false);
         SetDefaultHP(defaultHP);
 
         motor.OnDisable = null;

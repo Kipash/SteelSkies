@@ -15,6 +15,10 @@ public class EnemyEffects
 
     [SerializeField] bool disable;
 
+    [Header("Die effects")]
+    [SerializeField] PooledPrefabs explosion;
+    [SerializeField] SoundEffects sfx;
+
     Renderer[] renderers;
     List<CoroutineHandle> routines = new List<CoroutineHandle>();
 
@@ -59,10 +63,10 @@ public class EnemyEffects
         if (disable)
             return;
 
-        AppServices.Instance.AudioManager.SoundEffectsManager.PlaySound(SoundEffects.Explosion);
+        AppServices.Instance.AudioManager.SoundEffectsManager.PlaySound(sfx);
 
-        var explosion = AppServices.Instance.PoolManager.GetPooledPrefabTimed(PooledPrefabs.SmallExplsion, 3);
-        explosion.transform.position = exploPos;
+        var explo = AppServices.Instance.PoolManager.GetPooledPrefabTimed(explosion, 3);
+        explo.transform.position = exploPos;
     }
 
     IEnumerator<float> Flash()

@@ -11,12 +11,17 @@ public class PlayerEffects
 {
     internal enum EffectMode { none, Charging, Damage }
 
+    [SerializeField] Transform transform;
     [SerializeField] Renderer renderer;
     
     [SerializeField] Color chargedColor;
     [SerializeField] float flashDuration;
 
     [SerializeField] float minDif;
+
+    [Header("Die effects")]
+    [SerializeField] PooledPrefabs explosion;
+    [SerializeField] SoundEffects sfx;
 
     string flashTag = "PlayerFlash"; //TODO: Random ?
     float currentDelay;
@@ -28,7 +33,12 @@ public class PlayerEffects
 
     EffectMode mode;
 
-    public bool Disabled;
+    [SerializeField] bool disabled;
+    public bool Disabled
+    {
+        get { return disabled; }
+        set { disabled = value; }
+    }
 
     public void Start()
     {
@@ -37,11 +47,13 @@ public class PlayerEffects
         AppManager.Instance.OnLoadLevel += Effects_OnLoadLevel;
         
         perlinShake = Camera.main.GetComponent<PerlinShake>();
+        
     }
 
     private void Effects_OnLoadLevel()
     {
         perlinShake.StopAllCoroutines();
+        perlinShake.ResetCameraEffects();
 
         AppManager.Instance.OnLoadLevel -= Effects_OnLoadLevel;
     }
@@ -116,6 +128,11 @@ public class PlayerEffects
         if (!Disabled)
         {
             perlinShake.testProjection = true;
+
+            var g = AppServices.Instance.PoolManager.GetPooledPrefabTimed(explosion, 5);
+            g.transform.position = transform.position;
+
+            AppServices.Instance.AudioManager.SoundEffectsManager.PlaySound(sfx);
         }
     }
 }

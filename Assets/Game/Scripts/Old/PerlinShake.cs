@@ -15,13 +15,21 @@ public class PerlinShake : MonoBehaviour
     Vector3 originalPos;
     Quaternion originalRot;
 
-
+    Matrix4x4 default4x4;
     void OnEnable()
     {
+        if (default4x4 == null)
+            default4x4 = Camera.main.projectionMatrix;
+
         originalPos = transform.localPosition;
         originalRot = transform.localRotation;
     }
 
+
+    public void ResetCameraEffects()
+    {
+        //Camera.main.projectionMatrix = default4x4;
+    }
 
     void Update()
     {

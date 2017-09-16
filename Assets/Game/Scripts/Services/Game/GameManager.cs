@@ -14,10 +14,12 @@ public class GameManager
     public Action OnGameStart;
     public Action OnGameOver;
 
+    public GameObject ProjectilesField;
+
     public void Initialize()
     {
         OnGameStart += Start;
-        OnGameOver += End;
+        OnGameOver += () => { Timing.Instance.CallDelayedOnInstance(3, End); };
 
         //OnGameStart += () => { Debug.Log("GameManager_OnGameStart"); };
         //OnGameOver += () => { Debug.Log("GameManager_OnGameOver"); };

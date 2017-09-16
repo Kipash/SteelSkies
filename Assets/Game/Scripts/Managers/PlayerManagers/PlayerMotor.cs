@@ -34,9 +34,11 @@ public class PlayerMotor
 
     [Header("Generic")]
     [SerializeField] Transform transform;
+    [SerializeField] Directions Boundary = new Directions() { Down = -5f, Left = -45.9f, Right = 91.1f, Up = 64.50f };
 
     public CollisionCallBack colCallback;
     RaycastHit2D[] hit;
+
     public bool Disabled;
 
     public void FixedUpdate()
@@ -49,6 +51,19 @@ public class PlayerMotor
     {
         if(debugRays)
             DrawDebugLines();
+
+        if(Input.GetMouseButton(0))
+        {
+            var pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            pos.z = 0;
+            transform.position = pos;
+        }
+        if (Input.GetMouseButton(1))
+        {
+            var pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            pos.z = 0;
+            transform.localPosition = pos;
+        }
     }
     void DrawDebugLines()
     {
@@ -171,11 +186,11 @@ public class PlayerMotor
 
             transform.localPosition = new Vector3(
                 Mathf.Clamp(transform.localPosition.x,
-                    -45.9f,
-                    91.1f),
+                    Boundary.Left,
+                    Boundary.Right),
                 Mathf.Clamp(transform.localPosition.y,
-                    -5f,
-                    64.50f),
+                    Boundary.Down,
+                    Boundary.Up),
                 transform.localPosition.z);
 
             targetedTilt = tilt;

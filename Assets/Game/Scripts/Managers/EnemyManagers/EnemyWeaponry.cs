@@ -73,8 +73,11 @@ public class EnemyWeaponry
 
                 t.BarrelOrigin.localRotation = rot;
 
-                if(debug)
+                if (debug)
+                {
                     Debug.DrawLine(Target.position, t.BarrelOrigin.position, Color.cyan);
+                    Debug.DrawLine(t.BarrelOrigin.position, t.BarrelOrigin.position + (t.BarrelOrigin.forward * 1000), Color.white);
+                }
             }
         }
     }

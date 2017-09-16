@@ -64,7 +64,7 @@ public class ChallengeManager
         Timing.Instance.AddTag(SpawningTag, false);
 
         GameServices.Instance.GameManager.OnGameStart += ScanOponents;
-        GameServices.Instance.GameManager.OnGameOver += StopAndDestroyCurrentWave;
+        GameServices.Instance.GameManager.OnGameOver += DeactivateManager;
 
         Score = 0;
     }
@@ -134,10 +134,11 @@ public class ChallengeManager
         }
     }
 
-    void StopAndDestroyCurrentWave()
+    void DeactivateManager()
     {
         Timing.Instance.KillCoroutinesOnInstance(SpawningTag);
 
+        isSpawningWave = true;
         foreach (var x in currentGameObjects.ToArray())
             DeactivateEntity(x, false);
 

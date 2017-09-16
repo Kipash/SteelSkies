@@ -75,6 +75,8 @@ public class Weapon : MonoBehaviour
             go.transform.position = fireSpot.Spot.position;
             go.transform.rotation = Quaternion.Euler(0f, 0f, rot_z);
 
+            go.transform.SetParent(GameServices.Instance.GameManager.ProjectilesField.transform);
+
             foreach (var x in go.GetComponentsInChildren<TrailRenderer>())
                 x.Clear();
 
@@ -86,9 +88,8 @@ public class Weapon : MonoBehaviour
 
     public void Shoot()
     {
-        AppServices.Instance.AudioManager.SoundEffectsManager.PlaySound(Data.FireMod.SFX);
         for (int i = 0; i < Data.FireMod.Bursts; i++)
-        routines.Add(Timing.Instance.CallDelayedOnInstance(Data.FireMod.BurstTimeSpace * i, CreateProjectile));
+        routines.Add(Timing.Instance.CallDelayedOnInstance(Data.FireMod.BurstTimeSpace * i, () => { CreateProjectile(); PlaySFX(); }));
     }
     public void Deactivate()
     {
@@ -99,5 +100,9 @@ public class Weapon : MonoBehaviour
     {
         foreach (var x in routines)
             Timing.KillCoroutines(x);
+    }
+    void PlaySFX()
+    {
+        AppServices.Instance.AudioManager.SoundEffectsManager.PlaySound(Data.FireMod.SFX);
     }
 }

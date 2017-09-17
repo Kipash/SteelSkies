@@ -54,15 +54,33 @@ public class PlayerMotor
 
         if(Input.GetMouseButton(0))
         {
+            /*
+            Debug.LogFormat("x:{0,-5}, y:{1,-5}, z:{2,-5}", Input.mousePosition.x, Input.mousePosition.y, Input.mousePosition.z);
             var pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Debug.LogFormat("x:{0,-5}, y:{1,-5}, z:{2,-5}", pos.x, pos.y, pos.z);
             pos.z = 0;
             transform.position = pos;
-        }
-        if (Input.GetMouseButton(1))
-        {
-            var pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            pos.z = 0;
-            transform.localPosition = pos;
+            */
+
+            
+            var viewPos = Camera.main.ScreenToViewportPoint(Input.mousePosition);
+
+            var xLenght = Boundary.Right + Mathf.Abs(Boundary.Left);
+            var x = (xLenght * viewPos.x) + Boundary.Left;
+
+            var yLenght = Boundary.Up + Mathf.Abs(Boundary.Down);
+            var y = (yLenght * viewPos.y) + Boundary.Down;
+
+            transform.position = new Vector3(x, y);
+
+            transform.localPosition = new Vector3(
+                Mathf.Clamp(transform.localPosition.x,
+                    Boundary.Left,
+                    Boundary.Right),
+                Mathf.Clamp(transform.localPosition.y,
+                    Boundary.Down,
+                    Boundary.Up),
+                transform.localPosition.z);
         }
     }
     void DrawDebugLines()

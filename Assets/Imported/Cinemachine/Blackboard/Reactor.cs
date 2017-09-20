@@ -154,7 +154,7 @@ namespace Cinemachine.Blackboard
                     scanner.ScanFields(target);
 
                     if (!binding.IsValid)
-                        Debug.Log(string.Format(
+                        UnityEngine.Debug.Log(string.Format(
                                 GetFullName(target) + " Reactor: can't find " +
                                 ((fieldName.Length == 0) ? "(empty)" : fieldName)));
 

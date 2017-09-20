@@ -2,68 +2,73 @@
 using System.Collections;
 using MovementEffects;
 
-public class EnemyComponent : Entity
+namespace Aponi
 {
-    [SerializeField] EnemyMotor motor;
-    [SerializeField] EnemyWeaponry weaponry;
-    [SerializeField] EnemyEffects effects;
-
-
-    [Header("Misc")]
-    [SerializeField] bool Disable;
-
-    [Header("Health")]
-    [SerializeField] int defaultHP;
-    public int DamageOnCollision;
-
-    public PathSettings PathSettings
+    public class EnemyComponent : Entity
     {
-        get { return motor.pathSettings; }
-        set { motor.pathSettings = value; motor.GetPath(); }
-    }
+        [SerializeField] EnemyMotor motor;
+        [SerializeField] EnemyWeaponry weaponry;
+        [SerializeField] EnemyEffects effects;
 
-    private void OnEnable()
-    {
-        Timing.Instance.AddTag(GetType().ToString(), false);
-        SetDefaultHP(defaultHP);
 
-        motor.OnDisable = null;
-        motor.OnDisable += () => { Deactivate(false); } ;
-        motor.Start();
+        [Header("Misc")]
+        [SerializeField]
+        bool Disable;
 
-        effects.Start();
+        [Header("Health")]
+        [SerializeField]
+        int defaultHP;
+        public int DamageOnCollision;
 
-        if (GameServices.Instance != null && GameServices.IsMainManagerPresent)
-            weaponry.Target = GameServices.Instance.GameManager.Player.transform;
+        public PathSettings PathSettings
+        {
+            get { return motor.pathSettings; }
+            set { motor.pathSettings = value; motor.GetPath(); }
+        }
 
-        weaponry.Start();
-    }
-    private void OnDisable()
-    {
-        effects.Deactivate();
-        weaponry.Deactivate();
-    }
-    private void Update()
-    {
-        motor.Update();
-        weaponry.RotateTowers();
-    }
-    public override void Die()
-    {
-        effects.DieEffect(transform.position);
-        Deactivate(true);
-    }
-    void Deactivate(bool natural)
-    {
-        motor.OnDisable = null;
-        GameServices.Instance.ChallengeManager.DeactivateEntity(gameObject, natural);
-        SetDefaultHP(defaultHP);
+        private void OnEnable()
+        {
+            Timing.Instance.AddTag(GetType().ToString(), false);
+            SetDefaultHP(defaultHP);
 
-        OnDisable();
-    }
-    public override void Hit(int damage)
-    {
-        base.Hit(damage);
-        effects.HitEffect();
+            motor.OnDisable = null;
+            motor.OnDisable += () => { Deactivate(false); };
+            motor.Start();
+
+            effects.Start();
+
+            if (GameServices.Instance != null && AppServices.Initiliazed)
+                weaponry.Target = GameServices.Instance.GameManager.Player.transform;
+
+            weaponry.Start();
+        }
+        private void OnDisable()
+        {
+            effects.Deactivate();
+            weaponry.Deactivate();
+        }
+        private void Update()
+        {
+            motor.Update();
+            weaponry.RotateTowers();
+        }
+        public override void Die()
+        {
+            effects.DieEffect(transform.position);
+            Deactivate(true);
+        }
+        void Deactivate(bool natural)
+        {
+            motor.OnDisable = null;
+            GameServices.Instance.ChallengeManager.DeactivateEntity(gameObject, natural);
+            SetDefaultHP(defaultHP);
+
+            OnDisable();
+        }
+        public override void Hit(int damage)
+        {
+            base.Hit(damage);
+            effects.HitEffect();
+        }
     }
 }

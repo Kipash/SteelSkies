@@ -1,27 +1,29 @@
 ﻿using UnityEngine;
 using System.Collections;
 using MovementEffects;
-
-public class PreScene : MonoBehaviour
+using US = UnityEngine.SceneManagement;
+namespace Aponi
 {
-    [SerializeField] bool autoSwitchScene;
-    [SerializeField] bool pressAnyKey;
-
-    private void Start()
+    public class PreScene : MonoBehaviour
     {
-        if (autoSwitchScene)
-        {
-            Timing.KillCoroutines();
-            AppManager.Instance.LoadLevel(Application.loadedLevel + 1);
-        }
-    }
-    private void Update()
-    {
-        if (pressAnyKey)
-        {
-            if (Input.anyKeyDown)
-                AppManager.Instance.LoadLevel(Application.loadedLevel + 1);
-        }
+        [SerializeField] bool autoSwitchScene;
+        [SerializeField] bool pressAnyKey;
 
+        private void Start()
+        {
+            if (autoSwitchScene)
+            {
+                Timing.KillCoroutines();
+                US.SceneManager.LoadScene(US.SceneManager.GetActiveScene().buildIndex + 1);
+            }
+        }
+        private void Update()
+        {
+            if (pressAnyKey)
+            {
+                if (Input.anyKeyDown)
+                    US.SceneManager.LoadScene(US.SceneManager.GetActiveScene().buildIndex + 1);
+            }
+        }
     }
 }

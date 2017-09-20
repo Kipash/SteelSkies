@@ -183,7 +183,7 @@ namespace Cinemachine
                 {
                     if (vcam.enabled && vcam != this)
                     {
-                        Debug.LogError(Name
+                        UnityEngine.Debug.LogError(Name
                             + " has multiple CinemachineVirtualCameraBase-derived components.  Disabling "
                             + GetType().Name + ".");
                         enabled = false;

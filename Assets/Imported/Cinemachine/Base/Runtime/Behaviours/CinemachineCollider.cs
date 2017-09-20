@@ -161,7 +161,7 @@ namespace Cinemachine
             VirtualCamera = GetComponent<CinemachineVirtualCameraBase>();
             if (VirtualCamera == null)
             {
-                Debug.LogError("CinemachineCollider requires a Cinemachine Virtual Camera component");
+                UnityEngine.Debug.LogError("CinemachineCollider requires a Cinemachine Virtual Camera component");
                 enabled = false;
             }
             else

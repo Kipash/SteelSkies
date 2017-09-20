@@ -3,12 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class SceneAutoSwitch : MonoBehaviour {
-    private void Awake()
+namespace Aponi
+{
+    public class SceneAutoSwitch : MonoBehaviour
     {
-        if (GameObject.FindObjectOfType<AppManager>() == null)
-            SceneManager.LoadScene(0, LoadSceneMode.Single);   
-        else
-            Destroy(gameObject);
+        private void Awake()
+        {
+            if (!AppServices.Initiliazed)
+                UnityEngine.SceneManagement.SceneManager.LoadScene(0, LoadSceneMode.Single);
+            else
+                Destroy(gameObject);
+        }
     }
 }

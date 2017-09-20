@@ -180,7 +180,7 @@ namespace Cinemachine
                     }
                     catch (ArgumentException e)
                     {
-                        Debug.LogError(e.ToString());
+                        UnityEngine.Debug.LogError(e.ToString());
                     }
                 }
 
@@ -563,7 +563,7 @@ namespace Cinemachine
                 == Recentering.HeadingDerivationMode.Velocity
                 && mTargetRigidBody == null)
             {
-                Debug.Log(string.Format(
+                UnityEngine.Debug.Log(string.Format(
                         "Attempted to use HeadingDerivationMode.Velocity to calculate heading for {0}. No RigidBody was present on '{1}'. Defaulting to position delta",
                         GetFullName(VirtualCamera.VirtualCameraGameObject), VirtualCamera.Follow));
                 m_RecenterToTargetHeading.m_HeadingDefinition = Recentering.HeadingDerivationMode.PositionDelta;

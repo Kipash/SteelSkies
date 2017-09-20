@@ -357,7 +357,7 @@ namespace MovementEffects
             if (_exceptions.Count > 0)
             {
                 var ex = _exceptions.Dequeue();
-                Debug.LogErrorFormat("---- Timing exception ----\n{0}\n----\n{1}\n----", ex.StackTrace, ex.Message);
+                UnityEngine.Debug.LogErrorFormat("---- Timing exception ----\n{0}\n----\n{1}\n----", ex.StackTrace, ex.Message);
                 return;
             }
         }
@@ -1730,14 +1730,14 @@ namespace MovementEffects
                     if (handle == otherCoroutine)
                     {
                         if (warnOnIssue)
-                            Debug.LogWarning("A coroutine attempted to wait for itself.");
+                            UnityEngine.Debug.LogWarning("A coroutine attempted to wait for itself.");
 
                         return coptr;
                     }
                     if (handle.Key != otherCoroutine.Key)
                     {
                         if (warnOnIssue)
-                            Debug.LogWarning("A coroutine attempted to wait for a coroutine running on a different MEC instance.");
+                            UnityEngine.Debug.LogWarning("A coroutine attempted to wait for a coroutine running on a different MEC instance.");
 
                         return coptr;
                     }
@@ -1758,7 +1758,7 @@ namespace MovementEffects
             }
 
             if (warnOnIssue)
-                Debug.LogWarning("WaitUntilDone cannot hold: The coroutine handle that was passed in is invalid.\n" + otherCoroutine);
+                UnityEngine.Debug.LogWarning("WaitUntilDone cannot hold: The coroutine handle that was passed in is invalid.\n" + otherCoroutine);
 
             return 0f;
         }

@@ -53,7 +53,7 @@ namespace Cinemachine
             VirtualCamera = GetComponent<CinemachineVirtualCameraBase>();
             if (VirtualCamera == null)
             {
-                Debug.LogError("CinemachineFollowZoom requires a Cinemachine Virtual Camera component");
+                UnityEngine.Debug.LogError("CinemachineFollowZoom requires a Cinemachine Virtual Camera component");
                 enabled = false;
             }
             else

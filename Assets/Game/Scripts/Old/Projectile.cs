@@ -20,6 +20,17 @@ namespace Aponi
         float speed;
         RaycastHit2D[] hits;
 
+        Vector3 pos;
+
+        GameObject pooledG;
+        float dis;
+        float diff;
+        float dmg;
+
+        Entity e1;
+        Entity e2;
+        Entity e;
+
         // Use this for initialization
         private void OnEnable()
         {
@@ -30,7 +41,7 @@ namespace Aponi
         {
             yield return null;
 
-            var pos = transform.position;
+            pos = transform.position;
             transform.position = new Vector3(pos.x, pos.y, 0);
             Gfx.transform.position = pos;
 
@@ -38,16 +49,17 @@ namespace Aponi
             Invoke("Destroy", destroyDelay);
         }
 
+
         void OnTriggerEnter2D(Collider2D collision)
         {
             if (collision.CompareTag(TargetTag) && collision.gameObject.activeInHierarchy)
             {
-                var c1 = collision.GetComponentInChildren<Entity>();
-                var c2 = collision.GetComponentInParent<Entity>();
-                var c = (c1 == null ? c2 : c1);
-                if (c != null)
+                e1 = collision.GetComponentInChildren<Entity>();
+                e2 = collision.GetComponentInParent<Entity>();
+                e = (e1 == null ? e2 : e1);
+                if (e != null)
                 {
-                    c.Hit(Damage);
+                    e.Hit(Damage);
 
                     if (explodeOnImpact)
                         CreateExplosion(collision);
@@ -67,23 +79,13 @@ namespace Aponi
             transform.position += transform.right * speed * Time.fixedDeltaTime;
         }
 
-        //???
-        float Snap(float val)
-        {
-            int neg = val < 0 ? -1 : 1;
-
-            var wVal = Mathf.Abs(val);
-            var res = wVal < 45 ? 0 : wVal;
-            return res * neg;
-        }
-
         void CreateExplosion(Collider2D original)
         {
             AppServices.Instance.AudioManager.SoundEffectsManager.PlaySound(SoundEffects.Explosion);
 
-            var g = AppServices.Instance.PoolManager.GetPooledPrefabTimed(explosion.Prefab, explosion.Duration);
-            g.transform.position = transform.position;
-            g.transform.position = transform.position;
+            pooledG = AppServices.Instance.PoolManager.GetPooledPrefabTimed(explosion.Prefab, explosion.Duration);
+            pooledG.transform.position = transform.position;
+            pooledG.transform.position = transform.position;
 
             hits = Physics2D.CircleCastAll(transform.position, explosion.Radius, Vector2.zero, 0, explosion.Mask);
             foreach (var hit in hits)
@@ -91,18 +93,18 @@ namespace Aponi
                 if (hit.collider == original || !hit.collider.gameObject.CompareTag(TargetTag))
                     continue;
 
-                var c1 = hit.collider.GetComponentInChildren<Entity>();
-                var c2 = hit.collider.GetComponentInParent<Entity>();
-                var c = (c1 == null ? c2 : c1);
-                if (c != null)
+                e1 = hit.collider.GetComponentInChildren<Entity>();
+                e2 = hit.collider.GetComponentInParent<Entity>();
+                e = (e1 == null ? e2 : e1);
+                if (e != null)
                 {
-                    var dis = Vector2.Distance(hit.point, transform.position);
-                    var diff = explosion.Radius / dis;
-                    var dmg = explosion.Damage - (explosion.Damage * diff);
+                    dis = Vector2.Distance(hit.point, transform.position);
+                    diff = explosion.Radius / dis;
+                    dmg = explosion.Damage - (explosion.Damage * diff);
 
                     //Debug.LogFormat("Dealing damage({0}) to {1}|distance={2}", dmg, c.gameObject.name, dis);
 
-                    c.Hit((int)(dmg < 0 ? 0 : dmg));
+                    e.Hit((int)(dmg < 0 ? 0 : dmg));
                 }
                 else
                 {

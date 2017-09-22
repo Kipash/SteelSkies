@@ -52,7 +52,7 @@ namespace Console
             if (string.IsNullOrEmpty(data.ConsoleInputField.text)) { }
             else if (data.ConsoleInputField.text[0] == data.CommandChar && data.ConsoleInputField.text != data.CommandChar.ToString())
             {
-                SearchCommand(data.ConsoleInputField.text.ToLower());
+                SearchCommand(data.ConsoleInputField.text);
             }
             else
             {

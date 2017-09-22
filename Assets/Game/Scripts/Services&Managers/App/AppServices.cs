@@ -4,12 +4,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using System.Reflection;
-using AppBackend;
+using AponiBackend;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
-[assembly: AssemblyVersion("1.0.*")]
+[assembly: AssemblyVersion("1.1.*")]
 namespace Aponi
 {
     public class AppServices : MonoBehaviour
@@ -39,6 +39,10 @@ namespace Aponi
 
         [Header("- Settings -")]
         public bool DebugFeatures;
+
+
+        DateTime t;
+        TimeSpan diff;
 
         static string version;
         public static string VersionNumber
@@ -72,7 +76,7 @@ namespace Aponi
 
         void Awake()
         {
-            var t = DateTime.Now;
+            t = DateTime.Now;
 
             Initiliazed = true;
 
@@ -86,13 +90,13 @@ namespace Aponi
             Console.Console.AddStatic("quit", typeof(AppServices), "ForceQuit");
             Console.Console.AddStatic("exit", typeof(AppServices), "ForceQuit");
 
-            var diff = (DateTime.Now - t);
+            diff = (DateTime.Now - t);
             Console.Console.WriteLine(string.Format("All Game services loaded in {0} ms ({1} tics)", diff.TotalMilliseconds, diff.Ticks), true);
         }
 
         private void Update()
         {
-            AppInput.CheckInput();
+            AppInput.CheckAnyKey();
             ConsoleManger.Update();
             if (DebugFeatures)
             {
@@ -122,12 +126,11 @@ namespace Aponi
             ConsoleManger.Initialize();
 
             AppUI.SetVersion(Application.platform + " " + VersionNumber);
+            AppInput.Initialize();
             SceneManager.Initialize();
             cVarManager.Initialize();
             PoolManager.Initialize();
             AudioManager.Initialize();
-
-            CurrentBinds.SetDefaults();
         }
     }
 }

@@ -12,6 +12,8 @@ namespace Aponi
         [SerializeField] SoundEffect[] clips;
         Dictionary<SoundEffects, SoundEffect> effects = new Dictionary<SoundEffects, SoundEffect>();
 
+        SoundEffect sfx;
+
         public void Initialize()
         {
             effects = clips.GroupBy(x => x.Type).ToDictionary(x => x.Key, x => x.First());
@@ -24,7 +26,7 @@ namespace Aponi
                 UnityEngine.Debug.LogErrorFormat("Sound {0} isnt registered, but still trying to be played!", sound);
                 return;
             }
-            var sfx = effects[sound];
+            sfx = effects[sound];
             AppServices.Instance.AudioManager.AudioService.Play(sfx.Sound.Group, sfx.Sound.Clip, sfx.Sound.Volume);
         }
     }

@@ -1,25 +1,28 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using AponiBackend;
 
-[RequireComponent(typeof(FPSCounter))]
-public class FPSDisplay : MonoBehaviour
+namespace Aponi
 {
-    [System.Serializable]
-    private struct FPSColor
+    [RequireComponent(typeof(FPSCounter))]
+    public class FPSDisplay : MonoBehaviour
     {
-        public Color color;
-        public int minimumFPS;
-    }
+        [System.Serializable]
+        private struct FPSColor
+        {
+            public Color color;
+            public int minimumFPS;
+        }
 
-    [SerializeField] Text averageFPSLabel, lowestFPSLabel, highestFPSLabel;
-    [Space(20)]
-    [SerializeField]
-    FPSColor[] coloring;
+        [SerializeField] Text averageFPSLabel, lowestFPSLabel, highestFPSLabel;
+        [Space(20)]
+        [SerializeField]
+        FPSColor[] coloring;
 
-    FPSCounter fpsCouter;
+        FPSCounter fpsCouter;
 
-    static string[] stringsFrom00To99 = {
+        static string[] stringsFrom00To99 = {
         "00", "01", "02", "03", "04", "05", "06", "07", "08", "09",
         "10", "11", "12", "13", "14", "15", "16", "17", "18", "19",
         "20", "21", "22", "23", "24", "25", "26", "27", "28", "29",
@@ -32,27 +35,37 @@ public class FPSDisplay : MonoBehaviour
         "90", "91", "92", "93", "94", "95", "96", "97", "98", "99"
     };
 
-    void Awake()
-    {
-        fpsCouter = GetComponent<FPSCounter>();
-    }
-
-    void Update()
-    {
-        Display(averageFPSLabel, fpsCouter.AverageFPS);
-        Display(lowestFPSLabel, fpsCouter.LowestFPS);
-        Display(highestFPSLabel, fpsCouter.HighestFPS);
-    }
-    void Display(Text label, int fps)
-    {
-        label.text = stringsFrom00To99[Mathf.Clamp(fps, 0, 99)];
-        foreach (var x in coloring)
+        void Awake()
         {
-            if (fps >= x.minimumFPS)
+            fpsCouter = GetComponent<FPSCounter>();
+        }
+
+        void Update()
+        {
+            if (!DataStorage.UserData.CheapUI)
             {
-                label.color = x.color;
-                return;
+                Display(averageFPSLabel, fpsCouter.AverageFPS);
+                Display(lowestFPSLabel, fpsCouter.LowestFPS);
+                Display(highestFPSLabel, fpsCouter.HighestFPS);
             }
+        }
+        void Display(Text label, int fps)
+        {
+            label.text = stringsFrom00To99[Mathf.Clamp(fps, 0, 99)];
+            foreach (var x in coloring)
+            {
+                if (fps >= x.minimumFPS)
+                {
+                    label.color = x.color;
+                    return;
+                }
+            }
+        }
+        Rect r = new Rect(0,0, 300,50);
+        private void OnGUI()
+        {
+            if (DataStorage.UserData.CheapUI)
+                GUI.Label(r, stringsFrom00To99[Mathf.Clamp(fpsCouter.AverageFPS, 0, 99)]);
         }
     }
 }

@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace AppBackend
+namespace AponiBackend
 {
     public class UserData
     {
         public string UserName {get;set;}
+        public bool CheapUI { get;set;}
 
     }
 }

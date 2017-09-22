@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
-using MovementEffects;
+//using MovementEffects;
 
 namespace Aponi
 {
@@ -28,7 +28,7 @@ namespace Aponi
 
         private void OnEnable()
         {
-            Timing.Instance.AddTag(GetType().ToString(), false);
+            //Timing.Instance.AddTag(GetType().ToString(), false);
             SetDefaultHP(defaultHP);
 
             motor.OnDisable = null;

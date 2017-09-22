@@ -1,10 +1,10 @@
-﻿using AppBackend;
+﻿using AponiBackend;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace AppBackend
+namespace AponiBackend
 {
     [CustomEditor(typeof(FileConfig))]
     public class FileConfigEditor : Editor

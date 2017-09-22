@@ -3,12 +3,11 @@ using System.Collections;
 using System;
 using System.Linq;
 using UnityEngine.UI;
-using MovementEffects;
+//using MovementEffects;
 using System.Collections.Generic;
 
 namespace Aponi
 {
-
     [Serializable]
     public class WeaponManager
     {
@@ -20,6 +19,10 @@ namespace Aponi
         Weapon[] allWeapons;
         public Weapon CurrentWeapon { get; private set; }
 
+        Coroutine currCoroutine;
+
+        Weapon wep;
+
         bool disabled;
         public bool Disabled
         {
@@ -30,38 +33,30 @@ namespace Aponi
         {
             get
             {
-                return routines.Count != 0;
+                return currCoroutine != null;
             }
             set
             {
-                if (value && routines.Count == 0)
+                if (value && currCoroutine == null)
                 {
-                    var hl = Timing.CallPeriodically(Mathf.Infinity, CurrentWeapon.Data.FireMod.FireRate, Shoot, Segment.Update);
-                    routines.Add(hl);
+                    currCoroutine = GameServices.Instance.StartCoroutine(CommonCoroutine.CallRepeatedly(Shoot, CurrentWeapon.Data.FireMod.FireRate));
                 }
-                else if (!value && routines.Count != 0)
+                else if (!value && currCoroutine != null)
                     Deactivate();
             }
         }
 
-        List<CoroutineHandle> routines = new List<CoroutineHandle>();
-
         public void Deactivate()
         {
             CurrentWeapon.Deactivate();
-            KillAllCoroutine();
-            routines.Clear();
-        }
-        void KillAllCoroutine()
-        {
-            foreach (var x in routines)
-                Timing.KillCoroutines(x);
+            GameServices.Instance.StopCoroutine(currCoroutine);
+            currCoroutine = null;
         }
 
         public void Start()
         {
             allWeapons = WeaponHolder.GetComponentsInChildren<Weapon>();
-            var wep = allWeapons.First(x => x.Data.Type == primaryWeapon);
+            wep = allWeapons.First(x => x.Data.Type == primaryWeapon);
             ChangeWeapon(wep);
         }
 

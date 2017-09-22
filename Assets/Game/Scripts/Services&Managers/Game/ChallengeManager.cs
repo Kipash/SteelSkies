@@ -2,11 +2,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using MovementEffects;
+//using MovementEffects;
 
 namespace Aponi
 {
-
     public enum LocationType { none = 0, Relative = 1, World = 2 }
 
     [Serializable]
@@ -49,13 +48,19 @@ namespace Aponi
 
         List<GameObject> currentGameObjects = new List<GameObject>();
 
+        Coroutine currCoroutine;
+
         bool isSpawningWave;
 
         public const string SpawningTag = "SpawningTag";
 
+        string msg;
 
         float lastKill;
         int currCombo;
+
+        WaveInfo wave;
+        int max;
 
         int score;
         public int Score
@@ -68,7 +73,7 @@ namespace Aponi
 
         public void Initialize()
         {
-            Timing.Instance.AddTag(SpawningTag, false);
+            //Timing.Instance.AddTag(SpawningTag, false);
 
             GameServices.Instance.GameManager.OnGameStart += ScanOponents;
             GameServices.Instance.GameManager.OnGameOver += DeactivateManager;
@@ -92,7 +97,7 @@ namespace Aponi
                     else
                         currCombo = 0;
 
-                    var msg = currCombo > 0 ? string.Format("+{0}X{1}", s, currCombo + 1) : string.Format("+{0}", s);
+                    msg = currCombo > 0 ? string.Format("+{0}X{1}", s, currCombo + 1) : string.Format("+{0}", s);
                     GameServices.Instance.GameUIManager.ShowDialog(go.transform.position, msg);
                     Score += s * (currCombo + 1);
 
@@ -136,14 +141,14 @@ namespace Aponi
             {
                 isSpawningWave = true;
 
-                var wave = waves[UnityEngine.Random.Range(0, waves.Count)];
-                Timing.RunCoroutine(SpawnWave(wave), SpawningTag);
+                wave = waves[UnityEngine.Random.Range(0, waves.Count)];
+                currCoroutine = GameServices.Instance.StartCoroutine(SpawnWave(wave));
             }
         }
 
         void DeactivateManager()
         {
-            Timing.Instance.KillCoroutinesOnInstance(SpawningTag);
+            GameServices.Instance.StopCoroutine(currCoroutine);
 
             isSpawningWave = true;
             foreach (var x in currentGameObjects.ToArray())
@@ -153,12 +158,12 @@ namespace Aponi
             isSpawningWave = false;
         }
 
-        IEnumerator<float> SpawnWave(WaveInfo info)
+        IEnumerator SpawnWave(WaveInfo info)
         {
-            yield return Timing.WaitForSeconds(info.PreWarm);
+            yield return new WaitForSeconds(info.PreWarm);
             AppServices.Instance.AudioManager.SoundEffectsManager.PlaySound(SoundEffects.Warning);
 
-            var max = info.Wave.Count;
+            max = info.Wave.Count;
 
             for (int i = 0; i < max; i++)
             {
@@ -167,7 +172,7 @@ namespace Aponi
                 if (i + 1 == info.Wave.Count)
                     isSpawningWave = false;
                 else
-                    yield return Timing.WaitForSeconds(info.Wave[i].SpawnDelay);
+                    yield return new WaitForSeconds(info.Wave[i].SpawnDelay);
             }
         }
     }

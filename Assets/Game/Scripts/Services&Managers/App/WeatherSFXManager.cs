@@ -3,7 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using MovementEffects;
+//using MovementEffects;
 
 namespace Aponi
 {
@@ -41,16 +41,19 @@ namespace Aponi
             }
         }
 
+        WeatherSoundEffect fx;
+        float delay;
+        Sound sound;
+
         public void Initialize()
         {
             soundEffects = clips.GroupBy(x => x.Type).ToDictionary(x => x.Key, x => x.First());
-            Timing.CallDelayed(1, () => { Timing.RunCoroutine(PlayRandomSFX()); });
+            AppServices.Instance.StartCoroutine(CommonCoroutine.CallDelay(() => { AppServices.Instance.StartCoroutine(PlayRandomSFX()); }, 1));
         }
-
-
+        
         void ChangeWeather()
         {
-            var fx = soundEffects[currentWeather];
+            fx = soundEffects[currentWeather];
 
             audioSource.Stop();
 
@@ -62,18 +65,18 @@ namespace Aponi
             audioSource.Play();
         }
 
-        IEnumerator<float> PlayRandomSFX()
+        IEnumerator PlayRandomSFX()
         {
-            var delay = soundEffects[CurrentWeather].RandomSFXDelay + UnityEngine.Random.Range(0, soundEffects[CurrentWeather].RandomSFXRange);
-            yield return Timing.WaitForSeconds(delay);
+            delay = soundEffects[CurrentWeather].RandomSFXDelay + UnityEngine.Random.Range(0, soundEffects[CurrentWeather].RandomSFXRange);
+            yield return new WaitForSeconds(delay);
 
-            var sfx = soundEffects[CurrentWeather]
+            sound = soundEffects[CurrentWeather]
                 .RandomSounds[UnityEngine.Random.Range(0, soundEffects[CurrentWeather].RandomSounds.Length)];
             UnityEngine.Debug.Log("playing: " + soundEffects[CurrentWeather].Name);
-            AppServices.Instance.AudioManager.AudioService.Play(sfx.Group, sfx.Clip, sfx.Volume);
+            AppServices.Instance.AudioManager.AudioService.Play(sound.Group, sound.Clip, sound.Volume);
 
 
-            Timing.RunCoroutine(PlayRandomSFX());
+            AppServices.Instance.StartCoroutine(PlayRandomSFX());
         }
     }
 }

@@ -12,6 +12,8 @@ namespace Aponi
         List<SwitchElementTarget> Elements = new List<SwitchElementTarget>(); //All elements
         public List<Link> Links; //All Links
 
+        IEnumerable<SwitchElementTarget> toInteract;
+
         public void AddLink(SwitchElement switcher, SwitchElementTarget target) //Register in to Dictionary
         {
             Buttons.Add(switcher, target);
@@ -23,7 +25,7 @@ namespace Aponi
         }
         public void Interact(SwitchElement switcher) // Main goal of SwitchMechanism
         {
-            var toInteract = Elements.Where(x => x != GetLinked(switcher) && x.gameObject.active);
+            toInteract = Elements.Where(x => x != GetLinked(switcher) && x.gameObject.activeInHierarchy);
             foreach (var g in toInteract)
                 g.gameObject.SetActive(false); //Activation of rest
             GetLinked(switcher).gameObject.SetActive(true); //TheElemnt what you are interacting

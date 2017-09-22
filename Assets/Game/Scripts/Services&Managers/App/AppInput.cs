@@ -6,6 +6,121 @@ using System.Linq;
 
 namespace Aponi
 {
+    [Serializable]
+    public class AppInput
+    {
+        public Dictionary<int, int[]> Keys = new Dictionary<int, int[]>();
+
+        public static bool Disable;
+
+        public Action AnyKeyDown;
+
+        KeyActions key;
+        string keyCodeName;
+        KeyCode keyCode;
+        KeyCode[] kCodes;
+        string keyName;
+        int[] keys;
+        int i;
+
+
+        public void Initialize()
+        {
+            //Debug.Console.Add("bind", this, "EditBind");
+
+            
+            Add(KeyActions.MoveUp, new KeyCode[] { KeyCode.UpArrow, KeyCode.W });
+            Add(KeyActions.MoveDown, new KeyCode[] { KeyCode.DownArrow, KeyCode.S });
+            Add(KeyActions.MoveLeft, new KeyCode[] { KeyCode.LeftArrow, KeyCode.A });
+            Add(KeyActions.MoveRight, new KeyCode[] { KeyCode.RightArrow, KeyCode.D });
+        }
+
+        public void Add(KeyActions k, KeyCode[] codes)
+        {
+            Keys.Add((int)k, codes.Cast<int>().ToArray());
+        }
+
+        public void EditBind(string rawKey, string rawKeyCode)
+        {
+            key = IsKey(rawKey);
+            keyCodeName = Enum.GetNames(typeof(KeyCode))
+                                    .FirstOrDefault(x => x.ToLower() == rawKeyCode.ToLower());
+            if (!string.IsNullOrWhiteSpace(keyCodeName))
+            {
+                keyCode = (KeyCode)Enum.Parse(typeof(KeyCode), keyCodeName);
+
+                kCodes = Keys[(int)key].Cast<KeyCode>().ToArray();
+                Keys.Remove((int)key);
+                Add(key, (new KeyCode[] { keyCode }).Concat(kCodes).ToArray());
+            }
+        }
+        KeyActions IsKey(string rawKey)
+        {
+            keyName = Enum.GetNames(typeof(KeyActions))
+                        .FirstOrDefault(x => x.ToLower() == rawKey.ToLower());
+            if (!string.IsNullOrWhiteSpace(keyName))
+            {
+                return (KeyActions)Enum.Parse(typeof(KeyActions), keyName);
+            }
+            else
+                Console.Console.PrintErrorMessage("No such key as " + rawKey + " is found!");
+
+            return KeyActions.none;
+        }
+
+        public bool GetKey(KeyActions k, KeyState s)
+        {
+            if (Disable)
+                return false;
+
+            keys = HaveBinding((int)k);
+            for (i = 0; i < keys.Length; i++)
+            {
+                switch (s)
+                {
+                    case KeyState.Initial:
+                        if (Input.GetKeyDown((KeyCode)keys[i]))
+                            return true;
+                        break;
+                    case KeyState.Press:
+                        if (Input.GetKey((KeyCode)keys[i]))
+                            return true;
+                        break;
+                    case KeyState.End:
+                        if (Input.GetKeyUp((KeyCode)keys[i]))
+                            return true;
+                        break;
+                    default:
+                        UnityEngine.Debug.LogError("Keystate == none!");
+                        break;
+                }
+            }
+            return false;
+        }
+
+        private int[] HaveBinding(int pButton)
+        {
+            if (Keys.TryGetValue(pButton, out keys))
+            {
+                return keys;
+            }
+            UnityEngine.Debug.LogError(string.Format("Empty field of KeyCodes!"));
+            return null;
+        }
+
+        public void CheckAnyKey()
+        {
+            if (AnyKeyDown == null)
+                return;
+            if (Input.anyKeyDown)
+                AnyKeyDown?.Invoke();
+        }
+    }
+}
+
+/*
+namespace Aponi
+{
     public class AppInput
     {
         public bool Debug;
@@ -102,15 +217,13 @@ namespace Aponi
                 .Select(x => x.Key)
                 .Distinct();
 
-            /*
+            
 
-            var allKeys = Enum.GetNames(typeof(RegisteredKeys))
-                .Select(x => Enum.Parse(typeof(RegisteredKeys), x))
-                .Cast<RegisteredKeys>();
-
-            var notPressedKeys = allKeys.Except(calledKeys);
-
-            */
+            //var allKeys = Enum.GetNames(typeof(RegisteredKeys))
+            //    .Select(x => Enum.Parse(typeof(RegisteredKeys), x))
+            //    .Cast<RegisteredKeys>();
+            //
+            //var notPressedKeys = allKeys.Except(calledKeys);
 
             var tempInputs = currInputs.ToArray();
 
@@ -151,3 +264,4 @@ namespace Aponi
         }
     }
 }
+*/

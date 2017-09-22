@@ -19,17 +19,20 @@ namespace Aponi
 
         public Text TextPrefab;
 
+        GameObject g;
+        Text t;
+        RectTransform rt;
         public void ShowDialog(Vector3 worldPosition, string msg, float time = 1)
         {
-            var t = AppServices.Instance.PoolManager.GetPooledPrefabTimed(PooledPrefabs.UITextBubble, time);
-            var banner = t.GetComponentInChildren<Text>();
+            g = AppServices.Instance.PoolManager.GetPooledPrefabTimed(PooledPrefabs.UITextBubble, time);
+            t = g.GetComponentInChildren<Text>();
 
-            t.transform.SetParent(BannerRoot);
-            banner.text = msg;
+            g.transform.SetParent(BannerRoot);
+            t.text = msg;
 
-            var trans = t.GetComponent<RectTransform>();
+            rt = g.GetComponent<RectTransform>();
             //Debug.LogFormat("WTS({0}) = {1}", worldPosition, Camera.main.WorldToScreenPoint(worldPosition));
-            trans.position = Camera.main.WorldToScreenPoint(worldPosition);
+            g.transform.position = Camera.main.WorldToScreenPoint(worldPosition);
         }
     }
 }

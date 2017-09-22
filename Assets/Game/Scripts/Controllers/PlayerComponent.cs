@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
-using MovementEffects;
+//using MovementEffects;
 
 namespace Aponi
 {
@@ -31,10 +31,6 @@ namespace Aponi
 
         private void Start()
         {
-            Timing.Instance.AddTag(GetType().ToString(), false);
-
-            RegisterCallBacks();
-
             weaponManager.Start();
             playerEffects.Start();
 
@@ -55,6 +51,39 @@ namespace Aponi
                 playerEffects.Update();
                 motor.Update();
             }
+
+            CheckInput();
+        }
+
+        void CheckInput()
+        {
+            if(AppServices.Instance.AppInput.GetKey(KeyActions.MoveLeft, KeyState.Press))
+            {
+                motor.MoveLeft();
+            }
+            else if (AppServices.Instance.AppInput.GetKey(KeyActions.MoveRight, KeyState.Press))
+            {
+                motor.MoveRight();
+            }
+            else
+            {
+                motor.ResetHorizontal();
+            }
+
+            if (AppServices.Instance.AppInput.GetKey(KeyActions.MoveUp, KeyState.Press))
+            {
+                motor.MoveUp();
+            }
+            else if (AppServices.Instance.AppInput.GetKey(KeyActions.MoveDown, KeyState.Press))
+            {
+                motor.MoveDown();
+            }
+            else
+            {
+                motor.ResetVertical();
+            }
+
+               
         }
 
         private void FixedUpdate()
@@ -65,11 +94,7 @@ namespace Aponi
             }
         }
 
-        private void OnDestroy()
-        {
-            UnRegisterCallbacks();
-        }
-
+        /*
         void RegisterCallBacks()
         {
             #region PlayerMotor
@@ -79,10 +104,10 @@ namespace Aponi
             AppServices.Instance.AppInput.AddBind(new KeyBind()
             {
                 Name = "Move Left",
-                KeyCodes = CurrentBinds.BindedKeys[RegisteredKeys.MoveLeft],
+                KeyCodes = CurrentBinds.BindedKeys[KeyActions.MoveLeft],
 
-                Key = RegisteredKeys.MoveLeft,
-                JamKey = RegisteredKeys.MoveRight,
+                Key = KeyActions.MoveLeft,
+                JamKey = KeyActions.MoveRight,
 
                 CallBackOnPass = new KeyCallBack()
                 {
@@ -94,10 +119,10 @@ namespace Aponi
             AppServices.Instance.AppInput.AddBind(new KeyBind()
             {
                 Name = "Move Right",
-                KeyCodes = CurrentBinds.BindedKeys[RegisteredKeys.MoveRight],
+                KeyCodes = CurrentBinds.BindedKeys[KeyActions.MoveRight],
 
-                Key = RegisteredKeys.MoveRight,
-                JamKey = RegisteredKeys.MoveLeft,
+                Key = KeyActions.MoveRight,
+                JamKey = KeyActions.MoveLeft,
 
                 CallBackOnPass = new KeyCallBack()
                 {
@@ -109,10 +134,10 @@ namespace Aponi
             AppServices.Instance.AppInput.AddBind(new KeyBind()
             {
                 Name = "Move Up",
-                KeyCodes = CurrentBinds.BindedKeys[RegisteredKeys.MoveUp],
+                KeyCodes = CurrentBinds.BindedKeys[KeyActions.MoveUp],
 
-                Key = RegisteredKeys.MoveUp,
-                JamKey = RegisteredKeys.MoveDown,
+                Key = KeyActions.MoveUp,
+                JamKey = KeyActions.MoveDown,
 
                 CallBackOnPass = new KeyCallBack()
                 {
@@ -124,10 +149,10 @@ namespace Aponi
             AppServices.Instance.AppInput.AddBind(new KeyBind()
             {
                 Name = "Move Down",
-                KeyCodes = CurrentBinds.BindedKeys[RegisteredKeys.MoveDown],
+                KeyCodes = CurrentBinds.BindedKeys[KeyActions.MoveDown],
 
-                Key = RegisteredKeys.MoveDown,
-                JamKey = RegisteredKeys.MoveUp,
+                Key = KeyActions.MoveDown,
+                JamKey = KeyActions.MoveUp,
 
                 CallBackOnPass = new KeyCallBack()
                 {
@@ -138,12 +163,7 @@ namespace Aponi
 
             #endregion
         }
-
-        void UnRegisterCallbacks()
-        {
-            if (AppServices.Instance != null)
-                AppServices.Instance.AppInput.RemoveBind(typeof(PlayerComponent));
-        }
+        */
 
         void Spawn()
         {
@@ -182,19 +202,22 @@ namespace Aponi
                 GameServices.Instance.GameUIManager.PlayerHealth.SetImageDial(Health);
             }
         }
+        EnemyComponent e1;
+        EnemyComponent e2;
+        EnemyComponent e;
         void OnCrash(GameObject go)
         {
             if (!Invisible)
             {
                 if (go.CompareTag("Enemy"))
                 {
-                    var c1 = go.GetComponentInChildren<EnemyComponent>();
-                    var c2 = go.GetComponentInParent<EnemyComponent>();
-                    var c = (c1 == null ? c2 : c1);
-                    if (c != null)
+                    e1 = go.GetComponentInChildren<EnemyComponent>();
+                    e2 = go.GetComponentInParent<EnemyComponent>();
+                    e = (e1 == null ? e2 : e1);
+                    if (e != null)
                     {
-                        c.Crash(damageOnCollision);
-                        Crash(c.DamageOnCollision);
+                        e.Crash(damageOnCollision);
+                        Crash(e.DamageOnCollision);
                     }
                     else
                     {

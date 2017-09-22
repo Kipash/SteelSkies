@@ -4,88 +4,92 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.Audio;
-using MovementEffects;
+//using MovementEffects;
 
-[Serializable]
-public class AudioService
+namespace Aponi
 {
-    [SerializeField] GameObject AudioSourceRoot;
-    
-    [SerializeField] float preBuildSources;
-    [SerializeField] AnimationCurve volumeRollOff;
-    [SerializeField] bool disable;
-
-    List<AudioSource> allSources = new List<AudioSource>();
-    List<AudioSource> availableSources = new List<AudioSource>();
-
-    public void Initialize()
+    [Serializable]
+    public class AudioService
     {
-        for (int i = 0; i < preBuildSources; i++)
+        [SerializeField] GameObject AudioSourceRoot;
+
+        [SerializeField] float preBuildSources;
+        [SerializeField] AnimationCurve volumeRollOff;
+        [SerializeField] bool disable;
+
+        List<AudioSource> allSources = new List<AudioSource>();
+        List<AudioSource> availableSources = new List<AudioSource>();
+
+        AudioSource s;
+
+        public void Initialize()
         {
-            var s = AddSource();
-            s.enabled = false;
+            for (int i = 0; i < preBuildSources; i++)
+            {
+                s = AddSource();
+                s.enabled = false;
+            }
+
+            availableSources = allSources.ToList();
         }
 
-        availableSources = allSources.ToList();
-    }
+        public AudioSource GetPermanentSource()
+        {
+            return GetSource();
+        }
 
-    public AudioSource GetPermanentSource()
-    {
-        return GetSource();
-    }
+        public void Play(Sound sound)
+        {
+            Play(sound.Group, sound.Clip, sound.Volume);
+        }
 
-    public void Play(Sound sound)
-    {
-        Play(sound.Group, sound.Clip, sound.Volume);
-    }
+        public void Play(AudioMixerGroup group, AudioClip clip, float volume)
+        {
+            if (disable)
+                return;
 
-    public void Play(AudioMixerGroup group, AudioClip clip, float volume)
-    {
-        if (disable)
-            return;
+            var s = GetSource();
 
-        var s = GetSource();
-
-        s.outputAudioMixerGroup = group;
-        s.clip = clip;
-        s.Play();
-        s.volume = volume;
+            s.outputAudioMixerGroup = group;
+            s.clip = clip;
+            s.Play();
+            s.volume = volume;
 
 
-        Timing.Instance.CallDelayedOnInstance(clip.length, () => { DeactivateSource(s); });
-    }
+            AppServices.Instance.StartCoroutine(CommonCoroutine.CallDelay(() => { DeactivateSource(s); }, clip.length));
+        }
 
-    void DeactivateSource(AudioSource s)
-    {
-        s.enabled = false;
-        s.clip = null;
-        s.volume = 1;
-        s.outputAudioMixerGroup = null;
-        availableSources.Add(s);
-    }
+        void DeactivateSource(AudioSource s)
+        {
+            s.enabled = false;
+            s.clip = null;
+            s.volume = 1;
+            s.outputAudioMixerGroup = null;
+            availableSources.Add(s);
+        }
 
-    AudioSource AddSource()
-    {
-        var s = AudioSourceRoot.AddComponent<AudioSource>();
+        AudioSource AddSource()
+        {
+            s = AudioSourceRoot.AddComponent<AudioSource>();
 
-        s.rolloffMode = AudioRolloffMode.Custom;
-        s.SetCustomCurve(AudioSourceCurveType.CustomRolloff, volumeRollOff);
+            s.rolloffMode = AudioRolloffMode.Custom;
+            s.SetCustomCurve(AudioSourceCurveType.CustomRolloff, volumeRollOff);
 
-        allSources.Add(s);
-        return s;
-    }
+            allSources.Add(s);
+            return s;
+        }
 
-    AudioSource GetSource()
-    {
-        AudioSource s;
-        if (availableSources.Count == 0)
-            s = AddSource();
-        else
-            s = availableSources.First();
+        AudioSource GetSource()
+        {
+            if (availableSources.Count == 0)
+                s = AddSource();
+            else
+                s = availableSources.First();
 
-        availableSources.Remove(s);
-        s.enabled = true;
+            availableSources.Remove(s);
+            s.enabled = true;
 
-        return s;
+            return s;
+        }
     }
 }

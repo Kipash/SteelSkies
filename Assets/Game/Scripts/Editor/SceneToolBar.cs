@@ -10,19 +10,19 @@ namespace Aponi
         public static void LoadPreScene()
         {
             EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo();
-            EditorSceneManager.OpenScene("Assets/App/Scenes/PreScene.unity");
+            EditorSceneManager.OpenScene("Assets/Game/Scenes/PreScene.unity");
         }
         [MenuItem("Tools/Scenes/Menu")]
         public static void LoadMenu()
         {
             EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo();
-            EditorSceneManager.OpenScene("Assets/App/Scenes/Menu.unity");
+            EditorSceneManager.OpenScene("Assets/Game/Scenes/Menu.unity");
         }
         [MenuItem("Tools/Scenes/Main")]
         public static void LoadLevel()
         {
             EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo();
-            EditorSceneManager.OpenScene("Assets/App/Scenes/Main.unity");
+            EditorSceneManager.OpenScene("Assets/Game/Scenes/Main.unity");
         }
     }
 }

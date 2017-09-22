@@ -22,6 +22,10 @@ namespace Aponi
             }
         }
 
+        Scenes old;
+        int i;
+        int max;
+
         public void Initialize()
         {
             Console.Console.Add("map" , this, "LoadSceneConsole");
@@ -40,7 +44,7 @@ namespace Aponi
 
             if (newScene != Scenes.none)
             {
-                var old = scene;
+                old = scene;
                 
                 SM.SceneManager.LoadScene(name);
 
@@ -57,7 +61,7 @@ namespace Aponi
         {
             if (s != Scenes.none)
             {
-                var old = scene;
+                old = scene;
 
                 SM.SceneManager.LoadScene(s.ToString());
 
@@ -82,12 +86,11 @@ namespace Aponi
 
         public void ListAllScenes()
         {
-
-            int max = Enum.GetValues(typeof(Scenes)).Length;
+            max = Enum.GetValues(typeof(Scenes)).Length;
             Console.Console.WriteLine(" - All maps - ");
             Console.Console.WriteLine("Name");
             Console.Console.WriteLine(@"----------------------------------------------");
-            for (int i = 1; i < max; i++)
+            for (i = 1; i < max; i++)
             {
                 Console.Console.WriteLine(((Scenes)i).ToString());
             }

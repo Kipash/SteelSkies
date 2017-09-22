@@ -4,7 +4,7 @@ using System;
 using System.Text.RegularExpressions;
 using System.IO;
 
-namespace AppBackend
+namespace AponiBackend
 {
     [CreateAssetMenu(fileName = "Data files", menuName = "Configs/DataFiles", order = 1)]
     public class FileConfig : ScriptableObject

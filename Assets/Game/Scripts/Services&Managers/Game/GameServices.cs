@@ -1,4 +1,4 @@
-﻿using MovementEffects;
+﻿//using MovementEffects;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,6 +10,7 @@ namespace Aponi
     public class GameServices : MonoBehaviour
     {
         public static GameServices Instance { get; private set; }
+        public static bool Initialize;
 
         [Header(" - ChallengeManager - ")]
         public ChallengeManager ChallengeManager;
@@ -28,6 +29,8 @@ namespace Aponi
             if (!AppServices.Initiliazed)
                 return;
 
+            Initialize = true;
+
             AppServices.Instance.SceneManager.OnSceneChanged += SceneManager_OnSceneChanged;
 
             var t = DateTime.Now;
@@ -45,8 +48,9 @@ namespace Aponi
 
         private void SceneManager_OnSceneChanged(Scenes newScene, Scenes oldScene)
         {
-            Timing.KillCoroutines(ChallengeManager.SpawningTag);
+            StopAllCoroutines();
             AppServices.Instance.SceneManager.OnSceneChanged -= SceneManager_OnSceneChanged;
+            Initialize = false;
         }
     }
 }

@@ -2,7 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using MovementEffects;
+//using MovementEffects;
 
 namespace Aponi
 {
@@ -21,7 +21,7 @@ namespace Aponi
         public void Initialize()
         {
             OnGameStart += Start;
-            OnGameOver += () => { Timing.Instance.CallDelayedOnInstance(3, End); };
+            OnGameOver += () => { GameServices.Instance.StartCoroutine(CommonCoroutine.CallDelay(End, 3)); };
 
             //OnGameStart += () => { Debug.Log("GameManager_OnGameStart"); };
             //OnGameOver += () => { Debug.Log("GameManager_OnGameOver"); };
@@ -56,16 +56,16 @@ namespace Aponi
 
         public void ResetLevel(float delay)
         {
-            Timing.RunCoroutine(ResetLevelDelayed(delay));
+            GameServices.Instance.StartCoroutine(ResetLevelDelayed(delay));
         }
         public void ResetLevel()
         {
-            Timing.RunCoroutine(ResetLevelDelayed(0));
+            GameServices.Instance.StartCoroutine(ResetLevelDelayed(0));
         }
 
-        IEnumerator<float> ResetLevelDelayed(float delay)
+        IEnumerator ResetLevelDelayed(float delay)
         {
-            yield return Timing.WaitForSeconds(delay);
+            yield return new WaitForSeconds(delay);
             AppServices.Instance.SceneManager.ReloadCurrentScene();
         }
     }

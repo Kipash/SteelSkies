@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System;
 using System.Linq;
 using UnityEngine.Events;
-using MovementEffects;
+//using MovementEffects;
 
 namespace Aponi
 {
@@ -55,26 +55,34 @@ namespace Aponi
         public WeaponType Type;
         public WeaponFireMod FireMod;
     }
+    
 
     public class Weapon : MonoBehaviour
     {
         public WeaponData Data;
         [SerializeField] string enemyString;
-        List<CoroutineHandle> routines = new List<CoroutineHandle>();
+        List<Coroutine> routines = new List<Coroutine>();
+
+        GameObject go;
+        Transform t;
+        Vector3 point;
+        float rot_z;
+
+        Projectile pj;
 
         public void CreateProjectile()
         {
             foreach (var fireSpot in Data.FireMod.FireSpots)
             {
-                var t = fireSpot.Spot;
+                t = fireSpot.Spot;
 
                 if (fireSpot.FireParticle != null)
                     fireSpot.FireParticle.Emit(fireSpot.ParticleCount);
 
-                var point = t.gameObject.transform.right;
-                float rot_z = Mathf.Atan2(point.y, point.x) * Mathf.Rad2Deg;
+                point = t.gameObject.transform.right;
+                rot_z = Mathf.Atan2(point.y, point.x) * Mathf.Rad2Deg;
 
-                var go = AppServices.Instance.PoolManager.GetPooledPrefab(Data.FireMod.Projectile);
+                go = AppServices.Instance.PoolManager.GetPooledPrefab(Data.FireMod.Projectile);
                 go.transform.position = fireSpot.Spot.position;
                 go.transform.rotation = Quaternion.Euler(0f, 0f, rot_z);
 
@@ -83,16 +91,23 @@ namespace Aponi
                 foreach (var x in go.GetComponentsInChildren<TrailRenderer>())
                     x.Clear();
 
-                var bu = go.GetComponent<Projectile>();
-                bu.TargetTag = enemyString;
-                bu.Damage = Data.FireMod.Damage;
+                pj = go.GetComponent<Projectile>();
+                pj.TargetTag = enemyString;
+                pj.Damage = Data.FireMod.Damage;
             }
         }
 
+        int shoot_i;
         public void Shoot()
         {
-            for (int i = 0; i < Data.FireMod.Bursts; i++)
-                routines.Add(Timing.Instance.CallDelayedOnInstance(Data.FireMod.BurstTimeSpace * i, () => { CreateProjectile(); PlaySFX(); }));
+            for (shoot_i = 0; shoot_i < Data.FireMod.Bursts; shoot_i++)
+            {
+                routines.Add(
+                    GameServices.Instance.StartCoroutine(
+                        CommonCoroutine.CallDelay(
+                            () => { CreateProjectile(); PlaySFX(); },
+                            Data.FireMod.BurstTimeSpace * shoot_i)));
+            }
         }
         public void Deactivate()
         {
@@ -102,7 +117,7 @@ namespace Aponi
         void KillAllCoroutine()
         {
             foreach (var x in routines)
-                Timing.KillCoroutines(x);
+                GameServices.Instance.StopCoroutine(x);
         }
         void PlaySFX()
         {

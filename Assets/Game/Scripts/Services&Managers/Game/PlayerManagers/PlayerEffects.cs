@@ -3,7 +3,7 @@ using System.Collections;
 using System;
 using System.Linq;
 using UnityEngine.UI;
-using MovementEffects;
+//using MovementEffects;
 using System.Collections.Generic;
 
 namespace Aponi
@@ -35,6 +35,8 @@ namespace Aponi
         bool isFlashing;
         bool isFlashingLastFrame;
 
+        GameObject g;
+
         EffectMode mode;
 
         [SerializeField] bool disabled;
@@ -46,7 +48,7 @@ namespace Aponi
 
         public void Start()
         {
-            Timing.Instance.AddTag(flashTag, false);
+            //Timing.Instance.AddTag(flashTag, false);
 
             AppServices.Instance.SceneManager.OnSceneChanged += SceneManager_OnSceneChanged;
 
@@ -67,9 +69,9 @@ namespace Aponi
             if (!Disabled)
             {
                 if (isFlashing && !isFlashingLastFrame)
-                    Timing.Instance.RunCoroutineOnInstance(Flash(false), flashTag);
+                    GameServices.Instance.StartCoroutine(Flash(false));
                 else if (!isFlashing && isFlashingLastFrame)
-                    Timing.Instance.KillCoroutinesOnInstance(flashTag);
+                    GameServices.Instance.StartCoroutine(flashTag);
 
                 isFlashingLastFrame = isFlashing;
             }
@@ -77,14 +79,14 @@ namespace Aponi
                 SetColor(Color.black);
         }
 
-        IEnumerator<float> Flash(bool b)
+        IEnumerator Flash(bool b)
         {
-            Timing.Instance.RunCoroutineOnInstance(Flash(b, chargedColor), flashTag);
-            yield return Timing.WaitForOneFrame;
+            GameServices.Instance.StartCoroutine(Flash(b, chargedColor));
+            yield return new WaitForEndOfFrame();
         }
-        IEnumerator<float> Flash(bool b, Color col)
+        IEnumerator Flash(bool b, Color col)
         {
-            yield return Timing.WaitForSeconds(currentDelay);
+            yield return new WaitForSeconds(currentDelay);
 
             isFlashing = true;
             if (b)
@@ -93,7 +95,7 @@ namespace Aponi
                 SetColor(Color.black);
 
             currentDelay = flashDuration;
-            Timing.Instance.RunCoroutineOnInstance(Flash(!b), flashTag);
+            GameServices.Instance.StartCoroutine(Flash(!b));
         }
         void SetColor(Color col)
         {
@@ -133,7 +135,7 @@ namespace Aponi
             {
                 perlinShake.testProjection = true;
 
-                var g = AppServices.Instance.PoolManager.GetPooledPrefabTimed(explosion, 5);
+                g = AppServices.Instance.PoolManager.GetPooledPrefabTimed(explosion, 5);
                 g.transform.position = transform.position;
 
                 AppServices.Instance.AudioManager.SoundEffectsManager.PlaySound(sfx);

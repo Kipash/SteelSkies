@@ -15,10 +15,22 @@ public class PerlinShake : MonoBehaviour
     Vector3 originalPos;
     Quaternion originalRot;
 
+    Vector3 originalEuler;
+
+    float elapsed;
+    float damperedMag;
+    float x;
+    float y;
+    float z;
+
+    float frustrumHeight;
+    float frustrumWidth;
+
     Matrix4x4 default4x4;
+    Matrix4x4 mat;
     void OnEnable()
     {
-        if (default4x4 == null)
+        if (default4x4 == default(Matrix4x4))
             default4x4 = Camera.main.projectionMatrix;
 
         originalPos = transform.localPosition;
@@ -53,16 +65,15 @@ public class PerlinShake : MonoBehaviour
         }
     }
 
-
     IEnumerator ShakePosition(Transform transform, Vector3 originalPosition, float duration, float speed, float magnitude, AnimationCurve damper = null)
     {
         float elapsed = 0f;
         while (elapsed < duration)
         {
             elapsed += Time.deltaTime;
-            float damperedMag = (damper != null) ? (damper.Evaluate(elapsed / duration) * magnitude) : magnitude;
-            float x = (Mathf.PerlinNoise(Time.time * speed, 0f) * damperedMag) - (damperedMag / 2f);
-            float y = (Mathf.PerlinNoise(0f, Time.time * speed) * damperedMag) - (damperedMag / 2f);
+            damperedMag = (damper != null) ? (damper.Evaluate(elapsed / duration) * magnitude) : magnitude;
+            x = (Mathf.PerlinNoise(Time.time * speed, 0f) * damperedMag) - (damperedMag / 2f);
+            y = (Mathf.PerlinNoise(0f, Time.time * speed) * damperedMag) - (damperedMag / 2f);
             transform.localPosition = new Vector3(originalPosition.x + x, originalPosition.y + y, originalPosition.z);
             yield return null;
         }
@@ -72,15 +83,15 @@ public class PerlinShake : MonoBehaviour
 
     IEnumerator ShakeRotation(Transform transform, Quaternion originalRotation, float duration, float speed, float magnitude, AnimationCurve damper = null)
     {
-        Vector3 originalEuler = originalRotation.eulerAngles;
+        originalEuler = originalRotation.eulerAngles;
         float elapsed = 0f;
         while (elapsed < duration)
         {
             elapsed += Time.deltaTime;
-            float damperedMag = (damper != null) ? (damper.Evaluate(elapsed / duration) * magnitude) : magnitude;
-            float x = (Mathf.PerlinNoise(Time.time * speed, 0f) * damperedMag) - (damperedMag / 2f);
-            float y = (Mathf.PerlinNoise(0f, Time.time * speed) * damperedMag) - (damperedMag / 2f);
-            float z = (Mathf.PerlinNoise(0.5f, Time.time * speed * 0.5f) * damperedMag) - (damperedMag / 2f);
+            damperedMag = (damper != null) ? (damper.Evaluate(elapsed / duration) * magnitude) : magnitude;
+            x = (Mathf.PerlinNoise(Time.time * speed, 0f) * damperedMag) - (damperedMag / 2f);
+            y = (Mathf.PerlinNoise(0f, Time.time * speed) * damperedMag) - (damperedMag / 2f);
+            z = (Mathf.PerlinNoise(0.5f, Time.time * speed * 0.5f) * damperedMag) - (damperedMag / 2f);
             transform.localRotation = Quaternion.Euler(new Vector3(originalEuler.x + x, originalEuler.y + y, originalEuler.z + z));
             yield return null;
         }
@@ -94,13 +105,13 @@ public class PerlinShake : MonoBehaviour
         while (elapsed < duration)
         {
             elapsed += Time.deltaTime;
-            float damperedMag = (damper != null) ? (damper.Evaluate(elapsed / duration) * magnitude) : magnitude;
-            float x = (Mathf.PerlinNoise(Time.time * speed, 0f) * damperedMag) - (damperedMag / 2f);
-            float y = (Mathf.PerlinNoise(0f, Time.time * speed) * damperedMag) - (damperedMag / 2f);
+            damperedMag = (damper != null) ? (damper.Evaluate(elapsed / duration) * magnitude) : magnitude;
+            x = (Mathf.PerlinNoise(Time.time * speed, 0f) * damperedMag) - (damperedMag / 2f);
+            y = (Mathf.PerlinNoise(0f, Time.time * speed) * damperedMag) - (damperedMag / 2f);
             // offset camera obliqueness - http://answers.unity3d.com/questions/774164/is-it-possible-to-shake-the-screen-rather-than-sha.html
-            float frustrumHeight = 2 * camera.nearClipPlane * Mathf.Tan(camera.fieldOfView * 0.5f * Mathf.Deg2Rad);
-            float frustrumWidth = frustrumHeight * camera.aspect;
-            Matrix4x4 mat = camera.projectionMatrix;
+            frustrumHeight = 2 * camera.nearClipPlane * Mathf.Tan(camera.fieldOfView * 0.5f * Mathf.Deg2Rad);
+            frustrumWidth = frustrumHeight * camera.aspect;
+            mat = camera.projectionMatrix;
             mat[0, 2] = 2 * x / frustrumWidth;
             mat[1, 2] = 2 * y / frustrumHeight;
             camera.projectionMatrix = mat;

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
-using AppBackend;
+using AponiBackend;
 
 namespace Aponi
 {
@@ -25,6 +25,19 @@ namespace Aponi
             set
             {
                 DataStorage.UserData.UserName = value;
+                DataStorage.SaveUserData();
+            }
+        }
+
+        public bool CheapUI
+        {
+            get
+            {
+                return DataStorage.UserData.CheapUI;
+            }
+            set
+            {
+                DataStorage.UserData.CheapUI = value;
                 DataStorage.SaveUserData();
             }
         }

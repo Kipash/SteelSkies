@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections;
-using MovementEffects;
 using US = UnityEngine.SceneManagement;
 namespace Aponi
 {
@@ -13,7 +12,6 @@ namespace Aponi
         {
             if (autoSwitchScene)
             {
-                Timing.KillCoroutines();
                 US.SceneManager.LoadScene(US.SceneManager.GetActiveScene().buildIndex + 1);
             }
         }

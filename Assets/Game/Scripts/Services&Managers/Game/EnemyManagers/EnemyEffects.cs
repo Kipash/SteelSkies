@@ -2,7 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using MovementEffects;
+//using MovementEffects;
 
 namespace Aponi
 {
@@ -24,34 +24,34 @@ namespace Aponi
         [SerializeField] SoundEffects sfx;
 
         Renderer[] renderers;
-        List<CoroutineHandle> routines = new List<CoroutineHandle>();
+        Coroutine currCoroutine;
 
-        public const string EnemyEffectsTag = "EnemyEffectsTag";
+        int i;
+        GameObject g;
 
         public void Deactivate()
         {
-            KillAllCoroutine();
-            routines.Clear();
-        }
-        void KillAllCoroutine()
-        {
-            foreach (var x in routines)
-                Timing.KillCoroutines(x);
+            if(GameServices.Initialize && currCoroutine != null)
+                GameServices.Instance.StopCoroutine(currCoroutine);
+            currCoroutine = null;
         }
 
         public void Start()
         {
-            Timing.Instance.AddTag(EnemyEffectsTag, false);
-
-            if (GetRenderers)
-                renderers = gameObject.GetComponentsInChildren<Renderer>();
-            else
-                renderers = manualRenderers;
-
-            if (renderers != null)
+            //Timing.Instance.AddTag(EnemyEffectsTag, false);
+            if (renderers == null)
             {
-                foreach (var r in renderers)
-                    r.materials[0].SetColor("_EmissionColor", Color.black);
+                if (GetRenderers)
+                    renderers = gameObject.GetComponentsInChildren<Renderer>();
+                else
+                    renderers = manualRenderers;
+            }
+            else
+            {
+                for (i = 0; i < renderers.Length; i++)
+                {
+                    renderers[i].materials[0].SetColor("_EmissionColor", Color.black);
+                }
             }
         }
 
@@ -59,7 +59,7 @@ namespace Aponi
         {
             if (disable)
                 return;
-            routines.Add(Timing.Instance.RunCoroutineOnInstance(Flash(), EnemyEffectsTag));
+            GameServices.Instance.StartCoroutine(Flash());
         }
 
         public void DieEffect(Vector3 exploPos)
@@ -69,15 +69,15 @@ namespace Aponi
 
             AppServices.Instance.AudioManager.SoundEffectsManager.PlaySound(sfx);
 
-            var explo = AppServices.Instance.PoolManager.GetPooledPrefabTimed(explosion, 3);
-            explo.transform.position = exploPos;
+            g = AppServices.Instance.PoolManager.GetPooledPrefabTimed(explosion, 3);
+            g.transform.position = exploPos;
         }
 
-        IEnumerator<float> Flash()
+        IEnumerator Flash()
         {
             foreach (var r in renderers)
                 r.materials[0].SetColor("_EmissionColor", flashColor);
-            yield return Timing.WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(0.1f);
             foreach (var r in renderers)
                 r.materials[0].SetColor("_EmissionColor", Color.black);
         }

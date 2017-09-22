@@ -37,7 +37,10 @@ public class PlayerMotor
     [SerializeField] Directions Boundary = new Directions() { Down = -5f, Left = -45.9f, Right = 91.1f, Up = 64.50f };
 
     public CollisionCallBack colCallback;
-    RaycastHit2D[] hit;
+
+    RaycastHit2D[] raycastHit = new RaycastHit2D[10];
+    int hitCount;
+    Vector3 m;
 
     public bool Disabled;
 
@@ -94,27 +97,28 @@ public class PlayerMotor
                 collisionCheckOrigin.position.z),
             Color.red);
     }
+    
     void CollisionChecks()
     {
-        block.Down = Physics2D.Raycast(blockCheckOrigin.position, Vector2.down, blockCheckLength, rayCheckMask) ? 1 : 0;
-        block.Up = Physics2D.Raycast(blockCheckOrigin.position, Vector2.up, blockCheckLength, rayCheckMask) ? 1 : 0;
-
-        hit = Physics2D.RaycastAll(collisionCheckOrigin.position, Vector2.right, collisionCheckLength, rayCheckMask);
+        block.Down = Physics2D.RaycastNonAlloc(blockCheckOrigin.position, Vector2.down, raycastHit, blockCheckLength, rayCheckMask) > 0 ? 1 : 0;
+        block.Up = Physics2D.RaycastNonAlloc(blockCheckOrigin.position, Vector2.up, raycastHit, blockCheckLength, rayCheckMask) > 0 ? 1 : 0;
         
-        if (hit.Length > 0 && colCallback != null)
+        hitCount = Physics2D.RaycastNonAlloc(collisionCheckOrigin.position, Vector2.right, raycastHit, collisionCheckLength, rayCheckMask);
+        
+        if (hitCount > 0 && colCallback != null)
         {
             block.Right = 1;
-            colCallback.Invoke(hit.First().transform.gameObject);
+            colCallback.Invoke(raycastHit.First().transform.gameObject);
         }
         else
             block.Right = 0;
 
 
-        hit = Physics2D.RaycastAll(collisionCheckOrigin.position, Vector2.left, collisionCheckLength, rayCheckMask);
-        if (hit.Length > 0 && colCallback != null)
+        hitCount = Physics2D.RaycastNonAlloc(collisionCheckOrigin.position, Vector2.left, raycastHit, collisionCheckLength, rayCheckMask);
+        if (hitCount > 0 && colCallback != null)
         {
             block.Left = 1;
-            colCallback.Invoke(hit.First().transform.gameObject);
+            colCallback.Invoke(raycastHit.First().transform.gameObject);
         }
         else
             block.Left = 0;
@@ -178,7 +182,7 @@ public class PlayerMotor
     {
         if(!Disabled)
         {
-            var m = motion;
+            m = motion;
             if (motion.magnitude > maxMotionMagnitude)
                 m = m.normalized * maxMotionMagnitude;
                     
@@ -199,20 +203,12 @@ public class PlayerMotor
         }
     }
 
-    void ResetHorizontal()
+    public void ResetHorizontal()
     {
         targetedTilt = new Vector2(targetedTilt.x, 0);
     }
-    void ResetVertical()
+    public void ResetVertical()
     {
         targetedTilt = new Vector2(0, targetedTilt.y);
-    }
-
-    public void PlayerMotor_OnCallbacksDone(RegisteredKeys[] keys)
-    {
-        if (!keys.Contains(RegisteredKeys.MoveLeft) && !keys.Contains(RegisteredKeys.MoveRight))
-            ResetHorizontal();
-        if (!keys.Contains(RegisteredKeys.MoveUp) && !keys.Contains(RegisteredKeys.MoveDown))
-            ResetVertical();
     }
 }

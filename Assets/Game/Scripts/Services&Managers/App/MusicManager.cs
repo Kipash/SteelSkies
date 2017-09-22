@@ -2,7 +2,7 @@
 using System.Collections;
 using System;
 using UnityEngine.Audio;
-using MovementEffects;
+//using MovementEffects;
 using System.Collections.Generic;
 
 namespace Aponi
@@ -26,11 +26,12 @@ namespace Aponi
         [SerializeField] AudioMixerGroup group;
         [SerializeField] AudioClip[] clips;
 
-        string musicTag = "MusicTag";
+        Coroutine currCoroutine;
 
         AudioClip nextClip;
         int currClipIndex;
         float currentDelay;
+        float pitch;
 
         public void Reset()
         {
@@ -59,29 +60,29 @@ namespace Aponi
             if (audioSource.isPlaying)
             {
                 audioSource.Pause();
-                Timing.KillCoroutines(musicTag);
+                AppServices.Instance.StopCoroutine(currCoroutine);
             }
             else
                 UnityEngine.Debug.LogWarning("No music is playing, cant be stoped!");
         }
         void StartMusic()
         {
-            Timing.Instance.AddTag(musicTag, true);
             if (audioSource.clip != null)
             {
                 if (!audioSource.isPlaying)
                 {
                     audioSource.UnPause();
                     currentDelay = (audioSource.clip.length) - audioSource.time;
-                    Timing.RunCoroutine(NextTrack(), musicTag);
+                    AppServices.Instance.StartCoroutine(NextTrack());
                 }
             }
             else
-                Timing.RunCoroutine(NextTrack(), musicTag);
+                AppServices.Instance.StartCoroutine(NextTrack());
+
         }
-        IEnumerator<float> NextTrack()
+        IEnumerator NextTrack()
         {
-            yield return Timing.WaitForSeconds(currentDelay);
+            yield return new WaitForSeconds(currentDelay);
 
             if (clips.Length != 0)
             {
@@ -93,13 +94,12 @@ namespace Aponi
                     currClipIndex = 0;
                 nextClip = clips[currClipIndex];
 
-                float pitch;
                 if (group.audioMixer.GetFloat("MusicPitch", out pitch))
                     currentDelay = (audioSource.clip.length / pitch) - audioSource.time;
                 else
                     currentDelay = audioSource.clip.length - audioSource.time;
 
-                Timing.RunCoroutine(NextTrack(), musicTag);
+                AppServices.Instance.StartCoroutine(NextTrack());
             }
         }
     }

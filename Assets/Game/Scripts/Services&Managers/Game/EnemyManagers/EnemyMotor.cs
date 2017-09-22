@@ -4,7 +4,6 @@ using System.Collections;
 
 namespace Aponi
 {
-
     [Serializable]
     public class EnemyMotor
     {
@@ -48,6 +47,7 @@ namespace Aponi
             }
         }
         Transform point;
+        Quaternion targetRotation;
         public void Update()
         {
             if (path == null)
@@ -65,7 +65,7 @@ namespace Aponi
                 else
                     point = path[0];
 
-                var targetRotation = Quaternion.LookRotation(point.position - transform.position);
+                targetRotation = Quaternion.LookRotation(point.position - transform.position);
 
                 if (Rotate)
                     transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);

@@ -11,19 +11,22 @@ namespace Aponi
 
         Vector2 uvOffset = Vector2.zero;
 
-        Renderer renderer;
+        Renderer ren;
+
+        Material mat;
 
         private void Start()
         {
-            renderer = GetComponent<Renderer>();
+            ren = GetComponent<Renderer>();
+            mat = ren.materials[materialIndex];
         }
 
         void LateUpdate()
         {
             uvOffset += (uvAnimationRate * Time.deltaTime);
-            if (renderer.enabled)
+            if (ren.enabled)
             {
-                renderer.materials[materialIndex].SetTextureOffset(textureName, uvOffset);
+                mat.SetTextureOffset(textureName, uvOffset);
             }
         }
     }

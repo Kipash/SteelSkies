@@ -97,7 +97,7 @@ namespace Aponi
             {
                 if (t.TowerOrigin.gameObject.activeInHierarchy)
                 {
-                    wep.Shoot();
+                    wep.StartBurst();
                 }
             }
         }

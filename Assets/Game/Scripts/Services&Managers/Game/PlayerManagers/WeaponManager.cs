@@ -19,51 +19,34 @@ namespace Aponi
         Weapon[] allWeapons;
         public Weapon CurrentWeapon { get; private set; }
 
-        Coroutine currCoroutine;
-
         Weapon wep;
 
-        bool disabled;
-        public bool Disabled
-        {
-            get { return disabled; }
-            set { disabled = value; IsShooting = !value; }
-        }
-        public bool IsShooting
-        {
-            get
-            {
-                return currCoroutine != null;
-            }
-            set
-            {
-                if (value && currCoroutine == null)
-                {
-                    currCoroutine = GameServices.Instance.StartCoroutine(CommonCoroutine.CallRepeatedly(Shoot, CurrentWeapon.Data.FireMod.FireRate));
-                }
-                else if (!value && currCoroutine != null)
-                    Deactivate();
-            }
-        }
-
-        public void Deactivate()
-        {
-            CurrentWeapon.Deactivate();
-            GameServices.Instance.StopCoroutine(currCoroutine);
-            currCoroutine = null;
-        }
+        public bool Disabled;
 
         public void Start()
         {
             allWeapons = WeaponHolder.GetComponentsInChildren<Weapon>();
             wep = allWeapons.First(x => x.Data.Type == primaryWeapon);
             ChangeWeapon(wep);
+            CurrentWeapon.Enabled = true;
+
+            StartShoot();
         }
 
-        void Shoot()
+        async void StartShoot()
         {
-            if (!Disabled)
-                CurrentWeapon.Shoot();
+            while (true)
+            {
+                if (!Disabled)
+                {
+                    CurrentWeapon.StartBurst();
+                    await TimeSpan.FromSeconds(CurrentWeapon.Data.FireMod.FireRate);
+                }
+                else
+                {
+                    await TimeSpan.FromSeconds(Time.deltaTime);
+                }
+            }
         }
         void ChangeWeapon(Weapon wep)
         {

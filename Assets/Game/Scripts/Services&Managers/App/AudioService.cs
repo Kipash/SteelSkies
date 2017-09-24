@@ -48,7 +48,7 @@ namespace Aponi
             if (disable)
                 return;
 
-            var s = GetSource();
+            s = GetSource();
 
             s.outputAudioMixerGroup = group;
             s.clip = clip;

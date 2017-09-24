@@ -31,24 +31,37 @@ namespace Aponi
         Entity e2;
         Entity e;
 
-        // Use this for initialization
+        bool initialized;
+        TrailRenderer[] trails;
+
+        int i;
+
         private void OnEnable()
         {
-            StartCoroutine(OnEnabled());
-        }
-
-        IEnumerator OnEnabled()
-        {
-            yield return null;
+            if (!initialized)
+                Initialize();
 
             pos = transform.position;
             transform.position = new Vector3(pos.x, pos.y, 0);
             Gfx.transform.position = pos;
 
-            speed = Random.Range(minSpeed, maxSpeed);
+            speed = maxSpeed;
             Invoke("Destroy", destroyDelay);
         }
 
+        void Initialize()
+        {
+            trails = GetComponentsInChildren<TrailRenderer>();
+            initialized = true;
+        }
+
+        public void SetUp()
+        {
+            for (i = 0; i < trails.Length; i++)
+            {
+                trails[i].Clear();
+            }
+        }
 
         void OnTriggerEnter2D(Collider2D collision)
         {
@@ -73,7 +86,6 @@ namespace Aponi
             }
         }
 
-        // Update is called once per frame
         void FixedUpdate()
         {
             transform.position += transform.right * speed * Time.fixedDeltaTime;

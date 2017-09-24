@@ -22,6 +22,7 @@ namespace Aponi
         GameObject g;
         Text t;
         RectTransform rt;
+
         public void ShowDialog(Vector3 worldPosition, string msg, float time = 1)
         {
             g = AppServices.Instance.PoolManager.GetPooledPrefabTimed(PooledPrefabs.UITextBubble, time);

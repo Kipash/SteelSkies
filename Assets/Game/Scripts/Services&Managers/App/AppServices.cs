@@ -5,11 +5,12 @@ using System.Linq;
 using System;
 using System.Reflection;
 using AponiBackend;
+using System.Threading.Tasks;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
-[assembly: AssemblyVersion("1.1.*")]
+[assembly: AssemblyVersion("1.2.*")]
 namespace Aponi
 {
     public class AppServices : MonoBehaviour
@@ -94,6 +95,7 @@ namespace Aponi
             Console.Console.WriteLine(string.Format("All Game services loaded in {0} ms ({1} tics)", diff.TotalMilliseconds, diff.Ticks), true);
         }
 
+        GameObject go;
         private void Update()
         {
             AppInput.CheckAnyKey();
@@ -101,6 +103,22 @@ namespace Aponi
             if (DebugFeatures)
             {
                 AppUI.CurrentKeysText.text = Input.inputString;
+            }
+
+            //for (int i = 0; i < 50; i++)
+            //{
+            //    PoolManager.DeactivatePrefab(PoolManager.GetPooledPrefab(PooledPrefabs.Bullet));
+            //}
+            
+            
+            if (Input.GetKey(KeyCode.F1))
+            {
+                go = PoolManager.GetPooledPrefab(PooledPrefabs.Bullet);
+                go = PoolManager.GetPooledPrefab(PooledPrefabs.ChargedBullet);
+            }
+            else if(Input.GetKey(KeyCode.F2))
+            {
+                PoolManager.DeactivatePrefab(go);
             }
         }
 

@@ -97,8 +97,8 @@ namespace Aponi
                     else
                         currCombo = 0;
 
-                    msg = currCombo > 0 ? string.Format("+{0}X{1}", s, currCombo + 1) : string.Format("+{0}", s);
-                    GameServices.Instance.GameUIManager.ShowDialog(go.transform.position, msg);
+                    //msg = currCombo > 0 ? string.Format("+{0}X{1}", s, currCombo + 1) : string.Format("+{0}", s);
+                    //GameServices.Instance.GameUIManager.ShowDialog(go.transform.position, msg);
                     Score += s * (currCombo + 1);
 
                     lastKill = Time.time;

@@ -72,7 +72,7 @@ namespace Aponi
 
             sound = soundEffects[CurrentWeather]
                 .RandomSounds[UnityEngine.Random.Range(0, soundEffects[CurrentWeather].RandomSounds.Length)];
-            UnityEngine.Debug.Log("playing: " + soundEffects[CurrentWeather].Name);
+            //UnityEngine.Debug.Log("playing: " + soundEffects[CurrentWeather].Name);
             AppServices.Instance.AudioManager.AudioService.Play(sound.Group, sound.Clip, sound.Volume);
 
 

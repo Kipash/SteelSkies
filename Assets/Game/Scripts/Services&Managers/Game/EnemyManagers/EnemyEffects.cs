@@ -69,8 +69,8 @@ namespace Aponi
 
             AppServices.Instance.AudioManager.SoundEffectsManager.PlaySound(sfx);
 
-            g = AppServices.Instance.PoolManager.GetPooledPrefabTimed(explosion, 3);
-            g.transform.position = exploPos;
+            //g = AppServices.Instance.PoolManager.GetPooledPrefabTimed(explosion, 3);
+            //g.transform.position = exploPos;
         }
 
         IEnumerator Flash()

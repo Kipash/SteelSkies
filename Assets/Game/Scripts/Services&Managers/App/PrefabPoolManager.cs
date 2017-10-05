@@ -32,11 +32,11 @@ namespace Aponi
         Transform prefabRepository;
 
         Dictionary<PooledPrefabs, PooledPrefabInfo> prefabs = new Dictionary<global::PooledPrefabs, PooledPrefabInfo>();
-        Dictionary<GameObject, PooledPrefab> instaces = new Dictionary<GameObject, PooledPrefab>();
+        Dictionary<GameObject, PooledPrefab> instances = new Dictionary<GameObject, PooledPrefab>();
 
         PooledPrefabInfo[] pPrefabs;
         PooledPrefabInfo pPrefabInfo;
-        GameObject g;
+        //GameObject g;
         Transform t;
         int x;
         int y;
@@ -59,11 +59,14 @@ namespace Aponi
         {
             for (x = 0; x < pooledPrefabs.Length; x++)
             {
+                //if (pooledPrefabs[x].PreBuild == 0)
+                //    continue;
+
                 pooledPrefabs[x].AllObjects = new PooledPrefab[pooledPrefabs[x].PreBuild];
                 tempGOs = new List<PooledPrefab>();
                 for (y = 0; y < pooledPrefabs[x].PreBuild; y++)
                 {
-                    g = AddNew(pooledPrefabs[x]);
+                    GameObject g = AddNew(pooledPrefabs[x]);
                     SetParent(g, pooledPrefabs[x]);
                 }
                 pooledPrefabs[x].AllObjects = tempGOs.ToArray();
@@ -72,6 +75,8 @@ namespace Aponi
 
         public GameObject GetPooledPrefab(PooledPrefabs prefab)
         {
+            GameObject g;
+
             if (!prefabs.ContainsKey(prefab))
                 UnityEngine.Debug.LogErrorFormat("No PooledPrefab of type {0} is registered!", prefab);
 
@@ -98,7 +103,7 @@ namespace Aponi
         }
         public GameObject GetPooledPrefabTimed(PooledPrefabs prefab, float t)
         {
-            g = GetPooledPrefab(prefab);
+            GameObject g = GetPooledPrefab(prefab);
             AppServices.Instance.StartCoroutine(CommonCoroutine.CallDelay(() => { DeactivatePrefab(g); }, t));
             return g;
         }
@@ -117,30 +122,28 @@ namespace Aponi
             return null;
         }
 
-        public bool DeactivatePrefab(GameObject instace)
+        public bool DeactivatePrefab(GameObject instance)
         {
-            foreach (var x in instaces.Keys)
-            {
-                if (x == null)
-                    Debug.LogError("Fuck..!");
-            }
-            instace.transform.SetParent(null);
-            UnityEngine.Object.DontDestroyOnLoad(instace);
+
+            //instace.transform.SetParent(null);
+            //UnityEngine.Object.DontDestroyOnLoad(instace);
 
             foreach(var a in prefabs.Values)
             {
                 foreach(var b in a.AllObjects)
                 {
-                    if(b.Instance == instace)
+                    if(b.Instance == instance && b.Instance.GetInstanceID() == instance.GetInstanceID())
                     {
-                        SetParent(instace, pPrefabInfo);
-                        instaces[instace].InUse = false;
+                        var info = prefabs.Values.First(x => x.AllObjects.Where(y => y.Instance == instance).Count() != 0);
+                        SetParent(instance, info);
+                        instances[instance].InUse = false;
 
                         return true;
                     }
                 }
             }
 
+            /*
             foreach (var x in instaces.Keys)
             {
                 if(instaces[x].Instance == instace || x == instace)
@@ -151,8 +154,20 @@ namespace Aponi
                     return true;
                 }
             }
+            */
 
-            Debug.LogErrorFormat("Cant deactivate Gameobject called {0}! Not present in 'instances'.", instace.name);
+
+            foreach(var x in instances.Values)
+            {
+                if(x.Instance == null)
+                {
+                    Debug.LogError("Game object is null.. FUUUUCK!");
+
+                }
+                
+            }
+
+            Debug.LogErrorFormat("Cant deactivate Gameobject called {0}! Not present in 'instances'.", instance.name);
             return false;
         }
 
@@ -184,7 +199,8 @@ namespace Aponi
 
         void SetParent(GameObject go, PooledPrefabInfo prefab, bool deactivate = true)
         {
-            g = GetOrCreateGO(prefabRepository, prefab.Type.ToString());
+            //Debug.Log(prefab.Name);
+            GameObject g = GetOrCreateGO(prefabRepository, prefab.Type.ToString());
             go.transform.SetParent(g.transform);
 
             if (deactivate)
@@ -197,7 +213,7 @@ namespace Aponi
                 return t.gameObject;
             else
             {
-                g = new GameObject(name);
+                GameObject g = new GameObject(name);
                 g.transform.parent = root;
                 return g;
             }
@@ -218,12 +234,12 @@ namespace Aponi
         PooledPrefab pPrefab;
         GameObject AddNew(PooledPrefabInfo data)
         {
-            g = UnityEngine.Object.Instantiate(data.Prefab);
+            GameObject g = UnityEngine.Object.Instantiate(data.Prefab);
             UnityEngine.Object.DontDestroyOnLoad(g);
 
             pPrefab = new PooledPrefab() { Instance = g };
             tempGOs.Add(pPrefab);
-            instaces.Add(g, pPrefab);
+            instances.Add(g, pPrefab);
             return g;
         }
     }

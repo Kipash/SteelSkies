@@ -36,7 +36,10 @@ namespace AponiBackend
             var data = LoadFromFile<UserData>(userPath);
 
             if (data == null)
+            {
                 data = new UserData();
+                data.CheapUI = true;
+            }
             if (data.UserName == null)
                 data.UserName = "DefaultPlayer";
           

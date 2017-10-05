@@ -65,6 +65,9 @@ namespace Aponi
 
         void OnTriggerEnter2D(Collider2D collision)
         {
+            if (!gameObject.activeInHierarchy)
+                return;
+
             if (collision.CompareTag(TargetTag) && collision.gameObject.activeInHierarchy)
             {
                 e1 = collision.GetComponentInChildren<Entity>();
@@ -88,6 +91,8 @@ namespace Aponi
 
         void FixedUpdate()
         {
+            if (!gameObject.activeInHierarchy)
+                return;
             transform.position += transform.right * speed * Time.fixedDeltaTime;
         }
 
@@ -97,7 +102,7 @@ namespace Aponi
 
             pooledG = AppServices.Instance.PoolManager.GetPooledPrefabTimed(explosion.Prefab, explosion.Duration);
             pooledG.transform.position = transform.position;
-            pooledG.transform.position = transform.position;
+            //pooledG.transform.position = transform.position;
 
             hits = Physics2D.CircleCastAll(transform.position, explosion.Radius, Vector2.zero, 0, explosion.Mask);
             foreach (var hit in hits)

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Aponi
+namespace SteelSkies
 {
     public enum Scenes
     {

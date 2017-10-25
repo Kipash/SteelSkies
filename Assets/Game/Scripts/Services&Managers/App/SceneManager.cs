@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using SM = UnityEngine.SceneManagement;
 using System.Linq;
 
-namespace Aponi
+namespace SteelSkies
 {
     [Serializable]
     public class SceneManager

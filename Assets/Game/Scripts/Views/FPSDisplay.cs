@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using System.Collections;
 using AponiBackend;
 
-namespace Aponi
+namespace SteelSkies
 {
     [RequireComponent(typeof(FPSCounter))]
     public class FPSDisplay : MonoBehaviour

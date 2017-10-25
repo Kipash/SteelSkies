@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System;
 using System.Linq;
 
-namespace Aponi
+namespace SteelSkies
 {
     [Serializable]
     public class AppInput

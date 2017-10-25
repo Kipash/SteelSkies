@@ -2,7 +2,7 @@
 using System.Collections;
 using AponiBackend;
 
-namespace Aponi
+namespace SteelSkies
 {
     public class ConsoleVariables
     {

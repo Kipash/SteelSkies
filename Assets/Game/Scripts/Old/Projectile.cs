@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-namespace Aponi
+namespace SteelSkies
 {
     public class Projectile : MonoBehaviour
     {

@@ -3,12 +3,12 @@ using System.Collections;
 using System;
 //using MovementEffects;
 
-namespace Aponi
+namespace SteelSkies
 {
     public class PlayerComponent : Entity
     {
         [SerializeField] PlayerMotor motor;
-        [SerializeField] WeaponManager weaponManager;
+        [SerializeField] PlayerWeaponry weaponManager;
         [SerializeField] PlayerEffects playerEffects;
 
         [Header("Player")]
@@ -24,7 +24,7 @@ namespace Aponi
             {
                 isAlive = value;
                 motor.Disabled = !value;
-                weaponManager.Disabled = !value;
+                weaponManager.SetWeapons(value);
                 playerEffects.Disabled = !value;
             }
         }
@@ -168,6 +168,9 @@ namespace Aponi
         void Spawn()
         {
             IsAlive = true;
+
+            weaponManager.Start();
+
             SetDefaultHP(defaultHP);
             gameObject.SetActive(true);
             GameServices.Instance.GameUIManager.PlayerHealth.SetImageDial(Health);

@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 //using MovementEffects;
 
-namespace Aponi
+namespace SteelSkies
 {
     public enum LocationType { none = 0, Relative = 1, World = 2 }
 
@@ -27,7 +27,7 @@ namespace Aponi
     }
 
     [Serializable]
-    public class ChallengeManager
+    public class CahllengeManager
     {
         [Header("Roots")]
         [SerializeField]
@@ -97,8 +97,9 @@ namespace Aponi
                     else
                         currCombo = 0;
 
-                    //msg = currCombo > 0 ? string.Format("+{0}X{1}", s, currCombo + 1) : string.Format("+{0}", s);
-                    //GameServices.Instance.GameUIManager.ShowDialog(go.transform.position, msg);
+                    msg = currCombo > 0 ? string.Format("+{0}X{1}", s, currCombo + 1) : string.Format("+{0}", s);
+                    GameServices.Instance.GameUIManager.ShowDialog(go.transform.position, msg);
+                    GameServices.Instance.LevelManager.AddXP(s * (currCombo + 1));
                     Score += s * (currCombo + 1);
 
                     lastKill = Time.time;

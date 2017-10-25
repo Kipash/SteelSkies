@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 
-namespace Aponi
+namespace SteelSkies
 {
     public class SwitchManager : MonoBehaviour
     {

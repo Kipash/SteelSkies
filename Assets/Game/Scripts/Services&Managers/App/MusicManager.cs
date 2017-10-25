@@ -5,7 +5,7 @@ using UnityEngine.Audio;
 //using MovementEffects;
 using System.Collections.Generic;
 
-namespace Aponi
+namespace SteelSkies
 {
     [Serializable]
     public class MusicManager

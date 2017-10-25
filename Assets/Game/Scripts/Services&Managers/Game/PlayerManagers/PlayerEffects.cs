@@ -6,7 +6,7 @@ using UnityEngine.UI;
 //using MovementEffects;
 using System.Collections.Generic;
 
-namespace Aponi
+namespace SteelSkies
 {
 
     [Serializable]

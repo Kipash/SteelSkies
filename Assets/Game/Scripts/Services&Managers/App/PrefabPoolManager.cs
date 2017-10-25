@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Aponi
+namespace SteelSkies
 {
     [Serializable]
     public class PooledPrefabInfo

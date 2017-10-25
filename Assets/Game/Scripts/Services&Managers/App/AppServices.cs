@@ -11,7 +11,7 @@ using UnityEditor;
 #endif
 
 [assembly: AssemblyVersion("1.2.*")]
-namespace Aponi
+namespace SteelSkies
 {
     public class AppServices : MonoBehaviour
     {

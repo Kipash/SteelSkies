@@ -4,7 +4,7 @@ using System.Collections;
 using System.Linq;
 using System.Reflection;
 
-namespace Aponi
+namespace SteelSkies
 {
     [Serializable]
     public class CVarManager

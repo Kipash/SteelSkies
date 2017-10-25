@@ -2,7 +2,7 @@
 using System;
 using System.Collections;
 
-namespace Aponi
+namespace SteelSkies
 {
     [Serializable]
     public class AudioManager

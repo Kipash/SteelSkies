@@ -2,7 +2,7 @@
 using System.Collections;
 //using MovementEffects;
 
-namespace Aponi
+namespace SteelSkies
 {
     public class EnemyComponent : Entity
     {
@@ -38,7 +38,10 @@ namespace Aponi
             effects.Start();
 
             if (GameServices.Instance != null && AppServices.Initiliazed)
+            {
                 weaponry.Target = GameServices.Instance.GameManager.Player.transform;
+                SetDefaultHP(defaultHP * GameServices.Instance.LevelManager.CurrentLevel);
+            }
 
             weaponry.Start();
         }

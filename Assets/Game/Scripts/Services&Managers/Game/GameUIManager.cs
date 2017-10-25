@@ -3,7 +3,7 @@ using System;
 using System.Collections;
 using UnityEngine.UI;
 
-namespace Aponi
+namespace SteelSkies
 {
     [Serializable]
     public class GameUIManager
@@ -18,6 +18,8 @@ namespace Aponi
         public Dial PlayerHealth;
 
         public Text TextPrefab;
+
+        public Slider LevelSlider;
 
         GameObject g;
         Text t;

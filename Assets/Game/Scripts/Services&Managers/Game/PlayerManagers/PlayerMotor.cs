@@ -24,6 +24,7 @@ public class PlayerMotor
     [Header("Movement")]
     [SerializeField] Directions playerSpeed;
     [SerializeField] float maxMotionMagnitude;
+    [SerializeField] Vector3 TouchOffset;
 
     [Header("Tilt")]
     [SerializeField] float tiltSpeed;
@@ -57,7 +58,7 @@ public class PlayerMotor
 
         if (Input.GetMouseButton(0))
         {
-            var viewPort = Camera.main.ScreenToViewportPoint(Input.mousePosition);
+            var viewPort = Camera.main.ScreenToViewportPoint(Input.mousePosition + TouchOffset);
             //Debug.Log(viewPort.ToString());
 
             var xSum = Mathf.Abs(Boundary.Left) + Boundary.Right;
@@ -78,12 +79,6 @@ public class PlayerMotor
                    Boundary.Down,
                    Boundary.Up),
                transform.localPosition.z);
-        }
-        if (Input.GetMouseButton(1))
-        {
-            var pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            pos.z = 0;
-            transform.localPosition = pos;
         }
     }
     void DrawDebugLines()

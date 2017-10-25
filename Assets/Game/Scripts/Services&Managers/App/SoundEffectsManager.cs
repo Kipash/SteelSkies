@@ -4,7 +4,7 @@ using System.Collections;
 using System.Linq;
 using System.Collections.Generic;
 
-namespace Aponi
+namespace SteelSkies
 {
     [Serializable]
     public class SoundEffectsManager

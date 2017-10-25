@@ -4,7 +4,7 @@ using System.Collections;
 //using MovementEffects;
 using System.Collections.Generic;
 
-namespace Aponi
+namespace SteelSkies
 {
 
     [Serializable]
@@ -39,6 +39,7 @@ namespace Aponi
             if (disable)
                 return;
 
+            wep.Enabled = true;
             //Timing.Instance.AddTag(EnemyTimingTag, false);
             if (GameServices.Initialize)
             {
@@ -97,6 +98,7 @@ namespace Aponi
             {
                 if (t.TowerOrigin.gameObject.activeInHierarchy)
                 {
+                    Debug.Log("Shoot");
                     wep.StartBurst();
                 }
             }

@@ -7,10 +7,10 @@ using UnityEngine.Events;
 using System.Threading.Tasks;
 //using MovementEffects;
 
-namespace Aponi
+namespace SteelSkies
 {
 
-    public enum WeaponType { none = 0, Machinegun = 1, RocketLauncher = 2 }
+    public enum WeaponType { none = 0, Machinegun = 1, RocketLauncher = 2, Custom = 3 }
 
     [Serializable]
     public class FireSpot
@@ -64,6 +64,28 @@ namespace Aponi
 
         int x;
         int y;
+
+        WeaponFireMod firemodeOnStart;
+        void Start()
+        {
+            print("firemodeOnStart set!");
+            firemodeOnStart = new WeaponFireMod()
+            {
+                SFX = Data.FireMod.SFX,
+                Projectile = Data.FireMod.Projectile,
+                Name = Data.FireMod.Name,
+                FireSpots = Data.FireMod.FireSpots,
+                FireRate = Data.FireMod.FireRate,
+                Damage = Data.FireMod.Damage,
+                BurstTimeSpace = Data.FireMod.BurstTimeSpace,
+                Bursts = Data.FireMod.Bursts,
+            };
+        }
+
+        public void Reset()
+        {
+            Data.FireMod = firemodeOnStart;
+        }
 
         public void CreateProjectile()
         {

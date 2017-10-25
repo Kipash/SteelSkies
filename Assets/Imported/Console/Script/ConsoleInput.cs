@@ -24,7 +24,7 @@ namespace Console
         public Text ConsoleLog;
     }
 }
-namespace Aponi
+namespace SteelSkies
 {
     [Serializable]
     public class ConsoleInput

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Aponi
+namespace SteelSkies
 {
     public class GameServices : MonoBehaviour
     {
@@ -13,7 +13,10 @@ namespace Aponi
         public static bool Initialize;
 
         [Header(" - ChallengeManager - ")]
-        public ChallengeManager ChallengeManager;
+        public CahllengeManager ChallengeManager;
+
+        [Header(" - LevelManager - ")]
+        public LevelManager LevelManager;
 
         [Header(" - GameManager - ")]
         public GameManager GameManager;
@@ -23,6 +26,8 @@ namespace Aponi
 
         [Header(" - GameUIManager - ")]
         public GameUIManager GameUIManager;
+
+
 
         void Awake()
         {
@@ -41,6 +46,7 @@ namespace Aponi
 
             ChallengeManager.Initialize();
             WayPointManager.Initialize();
+            LevelManager.Initialize();
 
             var diff = (DateTime.Now - t);
             UnityEngine.Debug.LogFormat("All Game services loaded in {0} ms ({1} tics)", diff.TotalMilliseconds, diff.Ticks);

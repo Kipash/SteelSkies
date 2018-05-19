@@ -117,6 +117,7 @@ namespace SteelSkies
             }
         }
 
+
         int shoot_i;
         async public void StartBurst() 
         {
